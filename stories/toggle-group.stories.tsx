@@ -110,6 +110,69 @@ export const Disabled = meta.story({
   ),
 });
 
+/**
+ * Segmented filter pattern used in dense data toolbars (e.g. the c1 Appendix
+ * list): exactly one option is always pressed — clicking the active one
+ * doesn't deselect it. Implemented in userland by:
+ *
+ * 1. Treating the value as a single string (`mode`) but passing
+ *    `value={[mode]}` so ToggleGroup's multi-select array API is satisfied.
+ * 2. Coercing the change back to a single value with a default fallback
+ *    when the user somehow empties the array (e.g. programmatic reset).
+ * 3. Adding `debounceMs` to batch API calls while the user scrubs across
+ *    options before settling on one.
+ *
+ * `role="toolbar"` is the component's default and accepts `aria-orientation`
+ * cleanly under strict axe checks.
+ */
+export const SegmentedFilterRecipe = meta.story({
+  name: "Recipe: Segmented filter (always-one-pressed)",
+  render: () => {
+    const DEFAULT_MODE = "active";
+    const [mode, setMode] = useState<string>(DEFAULT_MODE);
+    return (
+      <div>
+        <ToggleGroup
+          aria-label="Filter by status"
+          size="sm"
+          debounceMs={600}
+          value={[mode]}
+          onValueChange={(next) => {
+            const picked = next[0] ?? DEFAULT_MODE;
+            setMode(picked);
+          }}
+        >
+          {STATUSES.map((s) => (
+            <Toggle key={s.value} value={s.value}>
+              {s.label}
+            </Toggle>
+          ))}
+        </ToggleGroup>
+        <p data-testid="committed" style={{ marginTop: 8, fontSize: 12, opacity: 0.6 }}>
+          Committed: {mode} — API call fires 600ms after the last click
+        </p>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const committed = canvas.getByTestId("committed");
+    await expect(committed).toHaveTextContent(/^Committed: active/);
+
+    const active = canvas.getByRole("button", { name: "Active" });
+    await expect(active).toHaveAttribute("data-pressed");
+
+    const draft = canvas.getByRole("button", { name: "Draft" });
+    await userEvent.click(draft);
+
+    // UI flips immediately (local state), committed text waits for debounce
+    await expect(draft).toHaveAttribute("data-pressed");
+    await waitFor(() => expect(committed).toHaveTextContent(/^Committed: draft/), {
+      timeout: 2000,
+    });
+  },
+});
+
 export const WithDebounce = meta.story({
   args: { debounceMs: 600 },
   render: (args) => {

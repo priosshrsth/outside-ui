@@ -3,7 +3,13 @@
  *
  * Applied globally to native elements. Lives in `outside-ui.base` so any
  * unlayered consumer styles (plain classes, Tailwind utilities) win by default.
+ *
+ * The bare `@layer outside-ui;` below registers the layer name at library
+ * load so consumers have a stable reference when declaring cascade order —
+ * see `styles/index.css` for the recommended consumer declaration.
  */
+
+@layer outside-ui;
 
 @layer outside-ui.base {
   button:not(:disabled):not([aria-disabled="true"]),

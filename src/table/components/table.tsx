@@ -20,6 +20,7 @@ import type {
   SortDirection,
   SortIcons,
   SortState,
+  TableDensity,
 } from "src/table/types/type";
 
 type TableClassNames = {
@@ -59,6 +60,13 @@ export type TableProps<TData extends RowData> = TableClassNames &
     page?: number;
     /** Page size. Falls back to SearchQueryProvider context if omitted */
     pageSize?: number;
+
+    /**
+     * Vertical density. Defaults to `"comfortable"` (form-field scale).
+     * Use `"compact"` for dense data listings — filter toolbars, 50+ row
+     * tables — and `"spacious"` for marketing / card layouts.
+     */
+    density?: TableDensity;
   };
 
 function renderSortIcon(direction: SortDirection | null, icons: SortIcons | undefined): ReactNode {
@@ -105,6 +113,7 @@ export function Table<TData extends RowData>({
   loadMoreLabel = "Loading more…",
   loadMoreThreshold,
   loadMoreRootMargin,
+  density = "comfortable",
 }: TableProps<TData>): ReactNode {
   const searchQueryCtx = useContext(SearchQueryContext);
   const page = pageProp ?? searchQueryCtx.searchQuery.page;
@@ -168,7 +177,7 @@ export function Table<TData extends RowData>({
   const showRows = !(isLoading || isError || showEmpty);
 
   return (
-    <table className={clsx(className)} data-slot="table">
+    <table className={clsx(className)} data-slot="table" data-density={density}>
       <thead className={theadClassName} data-slot="table-header">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr className={trClassName} data-slot="table-head-row" key={headerGroup.id}>

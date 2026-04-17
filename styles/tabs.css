@@ -6,21 +6,28 @@
  *   solid  — pill-shaped active tab with a filled background
  *   pills  — floating pill indicator that animates between tabs
  *
- * Override points:
- *   --ou-tabs-gap              — spacing between tabs in the list
+ * Layout tokens:
+ *   --ou-tabs-panel-gap        — gap between tabs list and panel (default `1rem`)
+ *   --ou-tabs-gap              — gap between tabs within the list (default `0.25rem`)
+ *   --ou-tabs-tab-padding-y    — tab vertical padding (default `0.5rem`)
+ *   --ou-tabs-tab-padding-x    — tab horizontal padding (default `0.875rem`)
+ *   --ou-tabs-font-size        — tab font-size (default `0.875rem`)
+ *   --ou-tabs-line-height      — tab line-height (default `1.25rem`)
+ *   --ou-tabs-radius           — tab & indicator border-radius
+ *   --ou-tabs-duration         — transition duration
+ *
+ * Colour tokens:
  *   --ou-tabs-fg               — default tab text color
  *   --ou-tabs-fg-active        — active tab text color
  *   --ou-tabs-bg-active        — active tab background (solid/pills variants)
  *   --ou-tabs-indicator-color  — line / indicator color
- *   --ou-tabs-radius           — tab & indicator border-radius
- *   --ou-tabs-duration         — transition duration
  */
 
 @layer outside-ui.components {
   [data-slot="tabs"] {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--ou-tabs-panel-gap, 1rem);
   }
   [data-slot="tabs"][data-orientation="vertical"] {
     flex-direction: row;
@@ -42,10 +49,10 @@
     background: transparent;
     border: 0;
     font: inherit;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: var(--ou-tabs-font-size, 0.875rem);
+    line-height: var(--ou-tabs-line-height, 1.25rem);
     color: var(--ou-tabs-fg, rgb(17 24 39 / 0.65));
-    padding: 0.5rem 0.875rem;
+    padding: var(--ou-tabs-tab-padding-y, 0.5rem) var(--ou-tabs-tab-padding-x, 0.875rem);
     border-radius: var(--ou-tabs-radius, 0.5rem);
     white-space: nowrap;
     transition:

@@ -21,6 +21,7 @@ import type {
   SortDirection,
   SortIcons,
   SortState,
+  TableDensity,
 } from "src/table/types/type";
 
 type VirtualTableClassNames = {
@@ -67,6 +68,13 @@ export type VirtualTableProps<TData extends RowData> = VirtualTableClassNames &
      * for fine-grained control.
      */
     scrollContainerStyle?: CSSProperties;
+
+    /**
+     * Vertical density. Defaults to `"comfortable"` (form-field scale).
+     * Use `"compact"` for dense data listings and `"spacious"` for airy
+     * card-like layouts. Drives cell + head padding via CSS tokens.
+     */
+    density?: TableDensity;
   };
 
 function renderSortIcon(direction: SortDirection | null, icons: SortIcons | undefined): ReactNode {
@@ -130,6 +138,7 @@ export function VirtualTable<TData extends RowData>({
   overscan = 10,
   maxHeight,
   scrollContainerStyle,
+  density = "comfortable",
 }: VirtualTableProps<TData>): ReactNode {
   const searchQueryCtx = useContext(SearchQueryContext);
   const page = pageProp ?? searchQueryCtx.searchQuery.page;
@@ -219,14 +228,30 @@ export function VirtualTable<TData extends RowData>({
   };
 
   return (
-    <div className={clsx(className)} data-slot="table" data-variant="virtual" role="table">
-      <div className={theadClassName} data-slot="table-header" role="rowgroup">
+    <div
+      className={clsx(className)}
+      data-slot="table"
+      data-variant="virtual"
+      data-density={density}
+      // role="table" only applies when there is row content to contain.
+      // In empty/loading/error states the table-scroll child holds just a
+      // status message (not a rowgroup), and axe's `aria-required-children`
+      // rule would fail on a table role with a non-rowgroup child. Without
+      // rows there's no table to announce — drop the role and let the
+      // status message speak for itself.
+      role={showRows ? "table" : undefined}
+    >
+      <div
+        className={theadClassName}
+        data-slot="table-header"
+        role={showRows ? "rowgroup" : undefined}
+      >
         {table.getHeaderGroups().map((headerGroup) => (
           <div
             className={trClassName}
             data-slot="table-head-row"
             key={headerGroup.id}
-            role="row"
+            role={showRows ? "row" : undefined}
             style={{ display: "grid", gridTemplateColumns }}
           >
             {headerGroup.headers.map((header) => {
@@ -241,7 +266,7 @@ export function VirtualTable<TData extends RowData>({
                   data-sortable={isSortable || undefined}
                   key={header.id}
                   onClick={isSortable ? () => handleSort(header.id) : undefined}
-                  role="columnheader"
+                  role={showRows ? "columnheader" : undefined}
                   aria-sort={
                     sortDirection === "asc"
                       ? "ascending"
@@ -274,11 +299,34 @@ export function VirtualTable<TData extends RowData>({
         ))}
       </div>
 
+      {/*
+        The scroll container is itself the body rowgroup. Two reasons:
+        (1) tabIndex={0} satisfies axe's `scrollable-region-focusable` rule —
+        an overflow:auto container must be keyboard-focusable so non-mouse
+        users can scroll.
+        (2) role="rowgroup" is the only child role ARIA's `table` allows,
+        so nesting a plain div (or one with role="presentation" / "group")
+        between role="table" and the row content triggers
+        `aria-required-children`. Promoting the scroll container to the
+        rowgroup collapses that middle layer.
+
+        The inner `data-slot="table-body"` stays purely as a layout helper
+        (holding the virtualized total height + relative positioning for
+        the absolutely-positioned rows); marking it role="presentation"
+        keeps axe's tree view walking through it to the rows.
+      */}
       <div
         ref={scrollRef}
         className={clsx(scrollContainerClassName)}
         data-slot="table-scroll"
         style={containerStyle}
+        // Only apply rowgroup role when there are rows to contain — axe's
+        // `aria-required-children` rule demands a rowgroup have at least
+        // one row child. Empty/loading/error states get no role so the
+        // container is a generic scroll wrapper that happens to be
+        // keyboard-focusable via tabIndex.
+        role={showRows ? "rowgroup" : undefined}
+        tabIndex={0}
       >
         {isLoading && <div data-slot="table-loading">Loading…</div>}
         {showError && <div data-slot="table-error">{errorMessage}</div>}
@@ -288,7 +336,7 @@ export function VirtualTable<TData extends RowData>({
           <div
             className={tbodyClassName}
             data-slot="table-body"
-            role="rowgroup"
+            role="presentation"
             style={{ height: totalSize, position: "relative" }}
           >
             {virtualItems.map((virtualRow) => {

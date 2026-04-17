@@ -12,7 +12,7 @@ const meta = preview.meta({
   argTypes: {
     size: {
       control: { type: "radio" },
-      options: ["sm", "md", "lg"] satisfies SelectSize[],
+      options: ["xs", "sm", "md", "lg"] satisfies SelectSize[],
     },
     debounceMs: {
       control: { type: "number", min: 0, max: 2000, step: 100 },

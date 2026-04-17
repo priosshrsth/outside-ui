@@ -25,6 +25,21 @@ export type ColumnDef<TData extends RowData> = {
   tdClassName?: string;
 };
 
+/**
+ * Vertical density of table rows.
+ *
+ * - `compact` — tight cells, good for dense data views (filter toolbars,
+ *   spreadsheet-like listings with many rows visible at once)
+ * - `comfortable` (default) — balanced padding, form-field scale
+ * - `spacious` — airy cells, good for marketing / card-like layouts
+ *
+ * Drives cell + header padding via `--ou-table-cell-padding-y/x` and
+ * `--ou-table-head-padding-y/x` with per-density defaults. Consumers can
+ * override any of those tokens at a scoped selector to override a single
+ * density, or set them at `:root` to redefine the scale globally.
+ */
+export type TableDensity = "compact" | "comfortable" | "spacious";
+
 export type SortDirection = "asc" | "desc";
 
 export type SortState = {

@@ -9,13 +9,23 @@
  * Position variants are selected via `[data-position]`:
  *   center, sheet-right, sheet-left, sheet-top, sheet-bottom, fullscreen
  *
- * Override points:
+ * Layout tokens:
+ *   --ou-dialog-radius              — popup border-radius
+ *   --ou-dialog-max-width           — center popup width cap (default `32rem`)
+ *   --ou-dialog-sheet-size          — sheet popup size along its axis (default `28rem`)
+ *   --ou-dialog-header-padding-y    — header vertical padding (default `1.25rem`)
+ *   --ou-dialog-header-padding-x    — header horizontal padding (default `1.5rem`)
+ *   --ou-dialog-body-padding        — body padding (default `1.5rem`)
+ *   --ou-dialog-footer-padding-y    — footer vertical padding (default `1rem`)
+ *   --ou-dialog-footer-padding-x    — footer horizontal padding (default `1.5rem`)
+ *   --ou-dialog-footer-gap          — gap between footer actions (default `0.5rem`)
+ *   --ou-dialog-title-size          — title font-size (default `1.125rem`)
+ *   --ou-dialog-description-size    — description font-size (default `0.875rem`)
+ *
+ * Colour tokens:
  *   --ou-dialog-backdrop            — backdrop fill
  *   --ou-dialog-surface             — popup background
  *   --ou-dialog-surface-fg          — popup text color
- *   --ou-dialog-radius              — popup border-radius
- *   --ou-dialog-max-width           — center popup width cap
- *   --ou-dialog-sheet-size          — sheet popup size along its axis
  *   --ou-dialog-duration            — transition duration
  *   --ou-dialog-easing              — transition easing
  */
@@ -148,13 +158,13 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1.25rem 1.5rem;
+    padding: var(--ou-dialog-header-padding-y, 1.25rem) var(--ou-dialog-header-padding-x, 1.5rem);
     border-bottom: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.06));
   }
 
   [data-slot="dialog-body"] {
     flex: 1;
-    padding: 1.5rem;
+    padding: var(--ou-dialog-body-padding, 1.5rem);
     overflow-y: auto;
   }
 
@@ -162,20 +172,20 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.5rem;
-    padding: 1rem 1.5rem;
+    gap: var(--ou-dialog-footer-gap, 0.5rem);
+    padding: var(--ou-dialog-footer-padding-y, 1rem) var(--ou-dialog-footer-padding-x, 1.5rem);
     border-top: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.06));
   }
 
   [data-slot="dialog-title"] {
-    font-size: 1.125rem;
+    font-size: var(--ou-dialog-title-size, 1.125rem);
     font-weight: 600;
     line-height: 1.4;
     margin: 0;
   }
 
   [data-slot="dialog-description"] {
-    font-size: 0.875rem;
+    font-size: var(--ou-dialog-description-size, 0.875rem);
     color: var(--ou-dialog-description-fg, rgb(17 24 39 / 0.65));
     line-height: 1.5;
     margin: 0.25rem 0 0 0;

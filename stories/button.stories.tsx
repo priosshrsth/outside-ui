@@ -145,3 +145,123 @@ export const TokenOverride = meta.story({
     </div>
   ),
 });
+
+/* ========== Recipes ========== */
+
+const ROWS = [
+  { id: "row-1", name: "Acme Corp", status: "Active" },
+  { id: "row-2", name: "Globex", status: "Pending" },
+  { id: "row-3", name: "Initech", status: "Inactive" },
+];
+
+/**
+ * The canonical CTA for a dense data-table row: `variant="primary" size="sm"`.
+ * Pair with the Table component's `density="compact"` prop for filter-heavy
+ * listings. Icon-only actions use `iconOnly` + `aria-label` for a11y.
+ */
+export const PrimaryActionRecipe = meta.story({
+  name: "Recipe: Primary action in dense row",
+  parameters: { layout: "padded" },
+  render: () => (
+    <table style={{ width: 420, borderCollapse: "collapse", fontSize: 14 }}>
+      <thead>
+        <tr style={{ borderBottom: "1px solid rgb(0 0 0 / 0.08)" }}>
+          <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 600 }}>Customer</th>
+          <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 600 }}>Status</th>
+          <th style={{ padding: "8px 12px" }}>
+            <span
+              style={{
+                position: "absolute",
+                width: 1,
+                height: 1,
+                padding: 0,
+                margin: -1,
+                overflow: "hidden",
+                clip: "rect(0, 0, 0, 0)",
+                whiteSpace: "nowrap",
+                border: 0,
+              }}
+            >
+              Actions
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {ROWS.map((r) => (
+          <tr key={r.id} style={{ borderBottom: "1px solid rgb(0 0 0 / 0.06)" }}>
+            <td style={{ padding: "8px 12px" }}>{r.name}</td>
+            <td style={{ padding: "8px 12px", opacity: 0.7 }}>{r.status}</td>
+            <td style={{ padding: "8px 12px", textAlign: "right" }}>
+              <Button variant="primary" size="sm">
+                Review
+              </Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ),
+});
+
+const FilterIcon = () => (
+  <svg
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  </svg>
+);
+
+const DownloadIcon = () => (
+  <svg
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
+
+/**
+ * Icon-only ghost buttons inside a toolbar. `iconOnly` gives the button a
+ * square aspect ratio; `aria-label` is required (axe will fail without it).
+ */
+export const ToolbarIconOnlyRecipe = meta.story({
+  name: "Recipe: Icon-only toolbar actions",
+  parameters: { layout: "padded" },
+  render: () => (
+    <div
+      role="toolbar"
+      aria-label="List actions"
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        padding: 4,
+        border: "1px solid rgb(0 0 0 / 0.08)",
+        borderRadius: 8,
+      }}
+    >
+      <Button variant="ghost" size="sm" iconOnly aria-label="Filter">
+        <FilterIcon />
+      </Button>
+      <Button variant="ghost" size="sm" iconOnly aria-label="Download">
+        <DownloadIcon />
+      </Button>
+      <div style={{ width: 1, height: 20, background: "rgb(0 0 0 / 0.08)", margin: "0 4px" }} />
+      <Button variant="primary" size="sm">
+        New
+      </Button>
+    </div>
+  ),
+});

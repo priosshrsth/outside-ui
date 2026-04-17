@@ -4,7 +4,19 @@
  * Covers single, multi (with chips), async, and creatable flows. Popup
  * animates via Base UI's `data-starting-style` / `data-ending-style`.
  *
- * Override points:
+ * Layout tokens (permissive defaults in line with Select):
+ *   --ou-combobox-input-width        — default `100%`; set to `auto` for toolbars
+ *   --ou-combobox-input-min-width    — default `10rem`; set to `0` for toolbars
+ *   --ou-combobox-input-height-xs    — default `1.75rem`
+ *   --ou-combobox-input-height-sm    — default `2rem`
+ *   --ou-combobox-input-height-md    — default `2.5rem`
+ *   --ou-combobox-input-height-lg    — default `3rem`
+ *   --ou-combobox-chips-min-height   — default `2.5rem`
+ *   --ou-combobox-chips-padding-y    — default `0.25rem`
+ *   --ou-combobox-chips-padding-x    — default `0.5rem`
+ *   --ou-combobox-trigger-padding-x  — default `0.875rem`
+ *
+ * Colour tokens:
  *   --ou-combobox-surface, --ou-combobox-surface-fg
  *   --ou-combobox-border, --ou-combobox-radius
  *   --ou-combobox-item-highlight-bg, --ou-combobox-item-selected-fg
@@ -15,8 +27,8 @@
 @layer outside-ui.components {
   /* ============ input (single-value or search-only) ============ */
   [data-slot="combobox-input"] {
-    width: 100%;
-    min-width: 10rem;
+    width: var(--ou-combobox-input-width, 100%);
+    min-width: var(--ou-combobox-input-min-width, 10rem);
     padding-inline: var(--ou-combobox-trigger-padding-x, 0.875rem);
     background: var(--ou-combobox-trigger-bg, #ffffff);
     color: var(--ou-combobox-trigger-fg, #111827);
@@ -28,16 +40,21 @@
       border-color var(--ou-combobox-duration, 150ms) ease,
       box-shadow var(--ou-combobox-duration, 150ms) ease;
   }
+  [data-slot="combobox-input"][data-size="xs"] {
+    height: var(--ou-combobox-input-height-xs, 1.75rem);
+    padding-inline: var(--ou-combobox-trigger-padding-x, 0.625rem);
+    font-size: 0.75rem;
+  }
   [data-slot="combobox-input"][data-size="sm"] {
-    height: 2rem;
+    height: var(--ou-combobox-input-height-sm, 2rem);
     font-size: 0.8125rem;
   }
   [data-slot="combobox-input"][data-size="md"] {
-    height: 2.5rem;
+    height: var(--ou-combobox-input-height-md, 2.5rem);
     font-size: 0.875rem;
   }
   [data-slot="combobox-input"][data-size="lg"] {
-    height: 3rem;
+    height: var(--ou-combobox-input-height-lg, 3rem);
     font-size: 1rem;
   }
   [data-slot="combobox-input"]:focus-visible,
@@ -61,9 +78,9 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.375rem;
-    min-height: 2.5rem;
-    padding: 0.25rem 0.5rem;
+    gap: var(--ou-combobox-chips-gap, 0.375rem);
+    min-height: var(--ou-combobox-chips-min-height, 2.5rem);
+    padding: var(--ou-combobox-chips-padding-y, 0.25rem) var(--ou-combobox-chips-padding-x, 0.5rem);
     background: var(--ou-combobox-trigger-bg, #ffffff);
     border: 1px solid var(--ou-combobox-border, rgb(0 0 0 / 0.15));
     border-radius: var(--ou-combobox-radius, 0.5rem);

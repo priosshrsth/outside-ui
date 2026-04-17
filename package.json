@@ -32,6 +32,10 @@
       "types": "./dist/button/index.d.mts",
       "default": "./dist/button/index.mjs"
     },
+    "./checkbox-group": {
+      "types": "./dist/checkbox-group/index.d.mts",
+      "default": "./dist/checkbox-group/index.mjs"
+    },
     "./combobox": {
       "types": "./dist/combobox/index.d.mts",
       "default": "./dist/combobox/index.mjs"
@@ -40,37 +44,52 @@
       "types": "./dist/dialog/index.d.mts",
       "default": "./dist/dialog/index.mjs"
     },
-    "./select": {
-      "types": "./dist/select/index.d.mts",
-      "default": "./dist/select/index.mjs"
-    },
-    "./tabs": {
-      "types": "./dist/tabs/index.d.mts",
-      "default": "./dist/tabs/index.mjs"
-    },
     "./lazy-search": {
       "types": "./dist/lazy-search/index.d.mts",
       "default": "./dist/lazy-search/index.mjs"
+    },
+    "./radio-group": {
+      "types": "./dist/radio-group/index.d.mts",
+      "default": "./dist/radio-group/index.mjs"
     },
     "./search-query": {
       "types": "./dist/search-query/index.d.mts",
       "default": "./dist/search-query/index.mjs"
     },
+    "./select": {
+      "types": "./dist/select/index.d.mts",
+      "default": "./dist/select/index.mjs"
+    },
     "./table": {
       "types": "./dist/table/index.d.mts",
       "default": "./dist/table/index.mjs"
     },
-    "./styles.css": "./styles/index.css",
+    "./tabs": {
+      "types": "./dist/tabs/index.d.mts",
+      "default": "./dist/tabs/index.mjs"
+    },
+    "./toggle-group": {
+      "types": "./dist/toggle-group/index.d.mts",
+      "default": "./dist/toggle-group/index.mjs"
+    },
+    "./use-deferred-change": {
+      "types": "./dist/use-deferred-change/index.d.mts",
+      "default": "./dist/use-deferred-change/index.mjs"
+    },
+    "./package.json": "./package.json",
     "./styles/accordion.css": "./styles/accordion.css",
     "./styles/base.css": "./styles/base.css",
     "./styles/button.css": "./styles/button.css",
+    "./styles/checkbox-group.css": "./styles/checkbox-group.css",
     "./styles/combobox.css": "./styles/combobox.css",
     "./styles/dialog.css": "./styles/dialog.css",
+    "./styles.css": "./styles/index.css",
     "./styles/pagination.css": "./styles/pagination.css",
+    "./styles/radio-group.css": "./styles/radio-group.css",
     "./styles/select.css": "./styles/select.css",
     "./styles/table.css": "./styles/table.css",
     "./styles/tabs.css": "./styles/tabs.css",
-    "./package.json": "./package.json"
+    "./styles/toggle-group.css": "./styles/toggle-group.css"
   },
   "publishConfig": {
     "access": "public"

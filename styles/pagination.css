@@ -1,11 +1,21 @@
 /**
  * outside-ui pagination.
  *
- * Override points:
- *   --ou-pagination-radius         button border-radius
- *   --ou-pagination-muted-fg       summary + ellipsis color
- *   --ou-pagination-active-bg      active page background
- *   --ou-pagination-active-fg      active page text color
+ * Layout tokens:
+ *   --ou-pagination-gap            — gap between summary and controls (default `1rem`)
+ *   --ou-pagination-controls-gap   — gap inside controls row (default `0.25rem`)
+ *   --ou-pagination-pages-gap      — gap between page buttons (default `0.125rem`)
+ *   --ou-pagination-padding-y      — outer vertical padding (default `0.75rem`)
+ *   --ou-pagination-font-size      — summary font-size (default `0.875rem`)
+ *   --ou-pagination-item-size      — prev/next/page button square (default `2rem`)
+ *   --ou-pagination-item-padding-x — horizontal padding on items (default `0.625rem`)
+ *   --ou-pagination-item-font-size — font-size on items (default `0.8125rem`)
+ *   --ou-pagination-radius         — item border-radius (default `0.375rem`)
+ *
+ * Colour tokens:
+ *   --ou-pagination-muted-fg       — summary + ellipsis color
+ *   --ou-pagination-active-bg      — active page background
+ *   --ou-pagination-active-fg      — active page text color
  */
 
 @layer outside-ui.components {
@@ -13,9 +23,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 0.75rem 0;
-    font-size: 0.875rem;
+    gap: var(--ou-pagination-gap, 1rem);
+    padding: var(--ou-pagination-padding-y, 0.75rem) 0;
+    font-size: var(--ou-pagination-font-size, 0.875rem);
   }
 
   [data-slot="pagination-summary"] {
@@ -25,13 +35,13 @@
   [data-slot="pagination-controls"] {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--ou-pagination-controls-gap, 0.25rem);
   }
 
   [data-slot="pagination-pages"] {
     display: flex;
     align-items: center;
-    gap: 0.125rem;
+    gap: var(--ou-pagination-pages-gap, 0.125rem);
   }
 
   [data-slot="pagination-prev"],
@@ -40,15 +50,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2rem;
-    height: 2rem;
-    padding-inline: 0.625rem;
+    min-width: var(--ou-pagination-item-size, 2rem);
+    height: var(--ou-pagination-item-size, 2rem);
+    padding-inline: var(--ou-pagination-item-padding-x, 0.625rem);
     background: transparent;
     border: 0;
     border-radius: var(--ou-pagination-radius, 0.375rem);
     color: inherit;
     font: inherit;
-    font-size: 0.8125rem;
+    font-size: var(--ou-pagination-item-font-size, 0.8125rem);
     line-height: 1;
     transition:
       background-color 150ms ease,
@@ -77,8 +87,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2rem;
-    height: 2rem;
+    min-width: var(--ou-pagination-item-size, 2rem);
+    height: var(--ou-pagination-item-size, 2rem);
     color: var(--ou-pagination-muted-fg, rgb(17 24 39 / 0.5));
   }
 }

@@ -1,6 +1,9 @@
+import { readdirSync } from "node:fs";
 import path from "node:path";
 
 import { defineConfig } from "vite-plus";
+
+const STYLES_DIR = path.resolve(import.meta.dirname, "styles");
 
 export default defineConfig({
   resolve: {
@@ -29,7 +32,40 @@ export default defineConfig({
       "src/use-deferred-change/index.ts",
     ],
     unbundle: true,
-    exports: false,
+    // tsdown writes JS + DTS subpath exports into package.json based on the
+    // `entry` list above. Adding a new entry automatically exposes it — no
+    // manual package.json edit needed. CSS lives outside `dist/` (shipped via
+    // the `files` field) so we mix it in via `customExports`: every file in
+    // `styles/` becomes `./styles/<file>.css`, and `styles/index.css` maps to
+    // the `./styles.css` barrel consumers import.
+    exports: {
+      packageJson: true,
+      customExports(exports) {
+        // tsdown collapses ESM-only entries to a bare string
+        // (`"./accordion": "./dist/accordion/index.mjs"`). That works for
+        // `moduleResolution: "bundler"` consumers via sibling .d.mts lookup,
+        // but `nodenext` + some bundlers' strict mode need the explicit
+        // `types` condition. Re-shape every JS subpath into a conditions
+        // object pointing to both types and default.
+        for (const [key, value] of Object.entries(exports)) {
+          if (typeof value === "string" && value.endsWith(".mjs")) {
+            exports[key] = {
+              types: value.replace(/\.mjs$/, ".d.mts"),
+              default: value,
+            };
+          }
+        }
+        // CSS subpaths (files live outside dist/, shipped via the `files`
+        // field). Dropping a new file into styles/ auto-exports it.
+        const cssFiles = readdirSync(STYLES_DIR).filter((f) => f.endsWith(".css"));
+        for (const file of cssFiles) {
+          const key = file === "index.css" ? "./styles.css" : `./styles/${file}`;
+          exports[key] = `./styles/${file}`;
+        }
+        exports["./package.json"] = "./package.json";
+        return exports;
+      },
+    },
     sourcemap: true,
     dts: {
       tsgo: true,

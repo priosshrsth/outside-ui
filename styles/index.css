@@ -7,6 +7,33 @@
  * Or cherry-pick per component to keep CSS tree-shaken:
  *   import "@anitshrsth/ui/styles/base.css";
  *   import "@anitshrsth/ui/styles/button.css";
+ *
+ * ---------------------------------------------------------------------------
+ * CASCADE LAYER CONTRACT (read me if styles look reset-wiped in your app)
+ * ---------------------------------------------------------------------------
+ *
+ * Component rules live in `@layer outside-ui.components`. When combined with
+ * Tailwind v4 (or any library whose reset lives in `@layer base`), the order
+ * the layers are declared in determines which wins — NOT specificity.
+ * If Tailwind is imported after outside-ui, its `@layer base` Preflight
+ * declarations rank above `outside-ui.components` and will strip the
+ * library's `border`, `padding`, etc. from buttons, groups, and popups.
+ *
+ * Fix: declare the full cascade order ONCE, at the very top of your global
+ * stylesheet, before any `@import`:
+ *
+ *   @layer theme, base, components, outside-ui, utilities;
+ *   @import "@anitshrsth/ui/styles.css";
+ *   @import "tailwindcss";
+ *
+ * This slots `outside-ui` between Tailwind's `base` (so Preflight stops
+ * stripping structural defaults) and `utilities` (so Tailwind utility
+ * classes like `className="w-full bg-red-500"` still override library
+ * decoration). The order declaration is free — no rules move, no specificity
+ * games. It just tells the browser which layer wins.
+ *
+ * Apps that don't use Tailwind can ignore this — the library layers work
+ * fine on their own.
  */
 
 @import "./base.css";

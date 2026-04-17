@@ -9,13 +9,21 @@
  * property, which holds the measured content height; we transition from
  * that to 0 via the `data-starting-style` / `data-ending-style` attributes.
  *
- * Override points:
- *   --ou-accordion-border        — divider color
- *   --ou-accordion-radius        — container border-radius
- *   --ou-accordion-trigger-fg    — trigger text color
- *   --ou-accordion-trigger-pad   — trigger vertical padding
- *   --ou-accordion-duration      — expand/collapse transition duration
- *   --ou-accordion-easing        — expand/collapse easing
+ * Layout tokens:
+ *   --ou-accordion-radius              — container border-radius (default `0.75rem`)
+ *   --ou-accordion-trigger-padding-y   — trigger vertical padding (default `1rem`)
+ *   --ou-accordion-trigger-padding-x   — trigger horizontal padding (default `1.25rem`)
+ *   --ou-accordion-trigger-gap         — trigger inner gap (default `1rem`)
+ *   --ou-accordion-panel-padding-x     — panel content horizontal padding (default `1.25rem`)
+ *   --ou-accordion-panel-padding-y     — panel content bottom padding (default `1rem`)
+ *
+ * Back-compat: `--ou-accordion-trigger-pad` is aliased to `--ou-accordion-trigger-padding-y`.
+ *
+ * Colour tokens:
+ *   --ou-accordion-border              — divider color
+ *   --ou-accordion-trigger-fg          — trigger text color
+ *   --ou-accordion-duration            — expand/collapse transition duration
+ *   --ou-accordion-easing              — expand/collapse easing
  */
 
 @layer outside-ui.components {
@@ -57,8 +65,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: var(--ou-accordion-trigger-pad, 1rem) 1.25rem;
+    gap: var(--ou-accordion-trigger-gap, 1rem);
+    padding: var(--ou-accordion-trigger-padding-y, var(--ou-accordion-trigger-pad, 1rem))
+      var(--ou-accordion-trigger-padding-x, 1.25rem);
     font: inherit;
     font-weight: 500;
     color: var(--ou-accordion-trigger-fg, #111827);
@@ -123,6 +132,7 @@
   }
 
   [data-slot="accordion-panel"] > * {
-    padding: 0 1.25rem 1rem;
+    padding: 0 var(--ou-accordion-panel-padding-x, 1.25rem)
+      var(--ou-accordion-panel-padding-y, 1rem);
   }
 }

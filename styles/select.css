@@ -5,15 +5,38 @@
  * Root). Popup animates via Base UI's `data-starting-style` /
  * `data-ending-style` attributes.
  *
- * Override points:
+ * Layout tokens (all have permissive defaults — set them to customise):
+ *   --ou-select-trigger-width        — default `auto`; set to `100%` for form fields
+ *   --ou-select-trigger-min-width    — default `0`; set e.g. `10rem` for form fields
+ *   --ou-select-trigger-padding-x    — default `0.875rem`
+ *   --ou-select-trigger-height-xs    — default `1.75rem`
+ *   --ou-select-trigger-height-sm    — default `2rem`
+ *   --ou-select-trigger-height-md    — default `2.5rem`
+ *   --ou-select-trigger-height-lg    — default `3rem`
+ *
+ * Colour tokens:
  *   --ou-select-surface              — popup background
  *   --ou-select-surface-fg           — popup text color
  *   --ou-select-border               — trigger + popup border
  *   --ou-select-radius               — trigger + popup border-radius
  *   --ou-select-item-highlight-bg    — hovered/keyboard-highlighted item bg
  *   --ou-select-item-selected-fg     — selected item text color
- *   --ou-select-trigger-padding-x    — trigger horizontal padding
  *   --ou-select-duration, --ou-select-easing
+ *
+ * Active-value affordance (opt-in via tokens — unset by default, no visual change):
+ *   --ou-select-trigger-active-bg         — bg when the trigger has a selected value
+ *   --ou-select-trigger-active-border     — border-color in the same state
+ *   --ou-select-trigger-active-fg         — text colour in the same state
+ *   --ou-select-trigger-active-hover-bg   — hover bg on top of the active state
+ *
+ * NOTE (0.2.0 breaking-ish default): the trigger used to ship `width: 100%`
+ * and `min-width: 10rem`, forcing it to fill its parent — which broke filter
+ * toolbars. Defaults are now `auto` / `0`. Form-field consumers can restore
+ * the old behaviour in a scoped rule:
+ *   .my-form [data-slot="select-trigger"] {
+ *     --ou-select-trigger-width: 100%;
+ *     --ou-select-trigger-min-width: 10rem;
+ *   }
  */
 
 @layer outside-ui.components {
@@ -22,8 +45,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    width: 100%;
-    min-width: 10rem;
+    width: var(--ou-select-trigger-width, auto);
+    min-width: var(--ou-select-trigger-min-width, 0);
     padding-inline: var(--ou-select-trigger-padding-x, 0.875rem);
     background: var(--ou-select-trigger-bg, #ffffff);
     color: var(--ou-select-trigger-fg, #111827);
@@ -33,20 +56,57 @@
     text-align: left;
     outline: none;
     transition:
+      background-color var(--ou-select-duration, 150ms) ease,
       border-color var(--ou-select-duration, 150ms) ease,
+      color var(--ou-select-duration, 150ms) ease,
       box-shadow var(--ou-select-duration, 150ms) ease;
   }
+  [data-slot="select-trigger"][data-size="xs"] {
+    height: var(--ou-select-trigger-height-xs, 1.75rem);
+    padding-inline: var(--ou-select-trigger-padding-x, 0.625rem);
+    font-size: 0.75rem;
+    gap: 0.375rem;
+  }
   [data-slot="select-trigger"][data-size="sm"] {
-    height: 2rem;
+    height: var(--ou-select-trigger-height-sm, 2rem);
     font-size: 0.8125rem;
   }
   [data-slot="select-trigger"][data-size="md"] {
-    height: 2.5rem;
+    height: var(--ou-select-trigger-height-md, 2.5rem);
     font-size: 0.875rem;
   }
   [data-slot="select-trigger"][data-size="lg"] {
-    height: 3rem;
+    height: var(--ou-select-trigger-height-lg, 3rem);
     font-size: 1rem;
+  }
+
+  /*
+   * Active-value affordance.
+   *
+   * Base UI emits `data-placeholder` on the trigger when no value is
+   * selected (handles both single-value empties and multi-select empty
+   * arrays via `selectors.hasSelectedValue`). `:not([data-placeholder])`
+   * is therefore equivalent to `data-has-value`, without needing a bridge
+   * through our Root wrapper.
+   *
+   * Defaults are unset, so this rule is a no-op until the consumer opts
+   * in by setting any of the tokens. That lets filter-toolbar consumers
+   * drop their hand-rolled `hasValue` className logic and theme the
+   * "this filter is active" pill via tokens only.
+   */
+  [data-slot="select-trigger"]:not([data-placeholder]) {
+    background: var(--ou-select-trigger-active-bg, var(--ou-select-trigger-bg, #ffffff));
+    border-color: var(
+      --ou-select-trigger-active-border,
+      var(--ou-select-border, rgb(0 0 0 / 0.15))
+    );
+    color: var(--ou-select-trigger-active-fg, var(--ou-select-trigger-fg, #111827));
+  }
+  [data-slot="select-trigger"]:not([data-placeholder]):hover:not([data-popup-open]) {
+    background: var(
+      --ou-select-trigger-active-hover-bg,
+      var(--ou-select-trigger-active-bg, var(--ou-select-trigger-bg, #ffffff))
+    );
   }
   [data-slot="select-trigger"]:focus-visible {
     border-color: var(--ou-ring, #2563eb);
@@ -79,10 +139,12 @@
 
   /* popup — sizes to content, clamped to the trigger width as a minimum
      and to a reasonable maximum so multi-select filter lists can breathe
-     wider than the trigger while long labels stay readable. */
+     wider than the trigger while long labels stay readable. The min-width
+     token lets toolbar consumers floor the popup above the trigger width
+     (e.g. 12rem for a 7rem compact trigger with multi-line labels). */
   [data-slot="select-popup"] {
     box-sizing: border-box;
-    min-width: var(--anchor-width);
+    min-width: var(--ou-select-popup-min-width, var(--anchor-width));
     width: max-content;
     max-width: min(calc(100vw - 1rem), var(--ou-select-popup-max-width, 24rem));
     max-height: min(var(--available-height, 20rem), 24rem);

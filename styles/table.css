@@ -6,7 +6,7 @@
  * Tailwind classes on the className props (Tailwind utilities beat our
  * layered rules via the recommended import order).
  *
- * Override points:
+ * Colour & structure tokens:
  *   --ou-table-border                divider + outer border
  *   --ou-table-radius                outer border-radius
  *   --ou-table-header-bg             thead background
@@ -14,6 +14,15 @@
  *   --ou-table-cell-fg               tbody cell text color
  *   --ou-table-row-hover-bg          row hover tint
  *   --ou-table-muted-fg              loading / empty / error text
+ *
+ * Density tokens (set by `density` prop on <Table> / <VirtualTable>, but
+ * overridable by consumers to redefine the scale globally or per scope):
+ *   --ou-table-cell-padding-y
+ *   --ou-table-cell-padding-x
+ *   --ou-table-head-padding-y
+ *   --ou-table-head-padding-x
+ *   --ou-table-font-size
+ *   --ou-table-head-font-size
  */
 
 @layer outside-ui.components {
@@ -23,7 +32,30 @@
     overflow: clip;
     border-radius: var(--ou-table-radius, 0.5rem);
     border: 1px solid var(--ou-table-border, rgb(0 0 0 / 0.08));
-    font-size: 0.875rem;
+    font-size: var(--ou-table-font-size, 0.875rem);
+  }
+
+  /* density presets — default to "comfortable" if no data-density present */
+  [data-slot="table"][data-density="compact"] {
+    --ou-table-cell-padding-y: 0.5rem;
+    --ou-table-cell-padding-x: 0.875rem;
+    --ou-table-head-padding-y: 0.5rem;
+    --ou-table-head-padding-x: 0.875rem;
+    --ou-table-font-size: 0.8125rem;
+  }
+  [data-slot="table"][data-density="comfortable"] {
+    --ou-table-cell-padding-y: 0.875rem;
+    --ou-table-cell-padding-x: 1.25rem;
+    --ou-table-head-padding-y: 0.75rem;
+    --ou-table-head-padding-x: 1.25rem;
+    --ou-table-font-size: 0.875rem;
+  }
+  [data-slot="table"][data-density="spacious"] {
+    --ou-table-cell-padding-y: 1.25rem;
+    --ou-table-cell-padding-x: 1.5rem;
+    --ou-table-head-padding-y: 1rem;
+    --ou-table-head-padding-x: 1.5rem;
+    --ou-table-font-size: 0.9375rem;
   }
 
   [data-slot="table-header"] {
@@ -32,9 +64,9 @@
   }
 
   [data-slot="table-head-cell"] {
-    padding: 0.75rem 1.25rem;
+    padding: var(--ou-table-head-padding-y, 0.75rem) var(--ou-table-head-padding-x, 1.25rem);
     text-align: left;
-    font-size: 0.75rem;
+    font-size: var(--ou-table-head-font-size, 0.75rem);
     font-weight: 600;
     color: var(--ou-table-head-fg, rgb(17 24 39 / 0.7));
     text-transform: uppercase;
@@ -68,7 +100,7 @@
   }
 
   [data-slot="table-cell"] {
-    padding: 0.875rem 1.25rem;
+    padding: var(--ou-table-cell-padding-y, 0.875rem) var(--ou-table-cell-padding-x, 1.25rem);
     color: var(--ou-table-cell-fg, inherit);
     vertical-align: middle;
   }

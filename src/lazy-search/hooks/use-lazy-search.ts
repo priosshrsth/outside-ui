@@ -15,7 +15,7 @@ type UseLazySearchOptions = {
   initialQuery?: string;
   /** Fires after the debounce delay with the latest query value */
   onDebouncedChange: (query: string) => void;
-  /** Debounce delay in milliseconds for invoking onDebouncedChange */
+  /** Debounce delay in milliseconds for invoking onDebouncedChange. Default `300`. */
   debounceMs?: number;
 };
 
@@ -31,7 +31,7 @@ export type UseLazySearchReturn = {
 export function useLazySearch({
   initialQuery,
   onDebouncedChange,
-  debounceMs = 800,
+  debounceMs = 300,
 }: UseLazySearchOptions): UseLazySearchReturn {
   const [searchQuery, setSearchQuery] = useState(() => initialQuery ?? "");
 

@@ -4,7 +4,7 @@ import type { ComponentProps, ReactNode } from "react";
 
 import { useDeferredChange } from "src/use-deferred-change";
 
-export type SelectSize = "sm" | "md" | "lg";
+export type SelectSize = "xs" | "sm" | "md" | "lg";
 
 type TriggerProps = ComponentProps<typeof BaseSelect.Trigger>;
 type ValueProps = ComponentProps<typeof BaseSelect.Value>;
