@@ -1,0 +1,82 @@
+{
+  "name": "@rnt-lib/core",
+  "version": "0.1.0",
+  "description": "A React component library for building data-rich UIs",
+  "homepage": "https://github.com/priosshrsth/outside-ui#readme",
+  "bugs": {
+    "url": "https://github.com/priosshrsth/outside-ui/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/priosshrsth/outside-ui.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./lazy-search": "./dist/lazy-search/index.mjs",
+    "./search-query": "./dist/search-query/index.mjs",
+    "./table": "./dist/table/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "storybook dev -p 6006",
+    "dev:lib": "vp pack --watch",
+    "test": "vp test",
+    "tsc": "tsgo --noEmit",
+    "check": "vp check && bun run tsc",
+    "storybook:build": "storybook build",
+    "release": "bumpp --commit --push --tag",
+    "prepublishOnly": "vp run build",
+    "prepare": "vp config"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.3.5",
+    "@storybook/addon-docs": "^10.3.5",
+    "@storybook/addon-vitest": "^10.3.5",
+    "@storybook/react-vite": "^10.3.5",
+    "@tanstack/react-table": "^8.21.3",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@typescript/native-preview": "^7.0.0-dev.20260416.2",
+    "@vitest/browser-playwright": "^4.1.4",
+    "bumpp": "^11.0.1",
+    "clsx": "^2.1.1",
+    "playwright": "^1.59.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "storybook": "^10.3.5",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^5.9.3",
+    "vite-plus": "^0.1.18",
+    "vitest": "^4.1.4"
+  },
+  "peerDependencies": {
+    "@tanstack/react-table": "^8.21.3",
+    "clsx": "^2.1.1",
+    "react": ">=19",
+    "react-dom": ">=19",
+    "typescript": ">=6"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "packageManager": "bun@1.3.12",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    }
+  }
+}
