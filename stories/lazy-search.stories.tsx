@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+import preview from "../.storybook/preview";
 import { useLazySearch } from "src/lazy-search";
 
 type DemoProps = {
@@ -21,6 +21,7 @@ function Demo({ debounceMs = 300, initialQuery = "" }: DemoProps): ReactNode {
   return (
     <div>
       <input
+        aria-label="Search"
         data-testid="search"
         onChange={handleInputChangeDebounced}
         placeholder="Type to search"
@@ -36,16 +37,15 @@ function Demo({ debounceMs = 300, initialQuery = "" }: DemoProps): ReactNode {
   );
 }
 
-const meta: Meta<typeof Demo> = {
+const meta = preview.meta({
   title: "Hooks/useLazySearch",
   component: Demo,
   tags: ["autodocs"],
-};
+});
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Default = meta.story({
   args: { debounceMs: 300 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -55,24 +55,26 @@ export const Default: Story = {
 
     await expect(canvas.getByTestId("current")).toHaveTextContent("hello");
 
-    await expect(canvas.getByTestId("debounced")).toHaveTextContent("");
+    // debounced value has not updated yet — assert on the input's cleared
+    // label text rather than using toHaveTextContent("") which always matches.
+    await expect(canvas.getByTestId("debounced").textContent).toBe("Debounced: ");
 
     await waitFor(() => expect(canvas.getByTestId("debounced")).toHaveTextContent("hello"), {
       timeout: 2000,
     });
   },
-};
+});
 
-export const InitialQuery: Story = {
+export const InitialQuery = meta.story({
   args: { initialQuery: "preset", debounceMs: 300 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByTestId("current")).toHaveTextContent("preset");
     await expect(canvas.getByTestId("debounced")).toHaveTextContent("preset");
   },
-};
+});
 
-export const ClearImmediate: Story = {
+export const ClearImmediate = meta.story({
   args: { initialQuery: "abc", debounceMs: 300 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -81,11 +83,14 @@ export const ClearImmediate: Story = {
 
     await userEvent.click(canvas.getByTestId("clear"));
 
-    await expect(canvas.getByTestId("current")).toHaveTextContent("");
+    // After clear, the input value resets and the "Immediate:" label stays
+    // alone. Use textContent rather than toHaveTextContent("") which matches
+    // any string.
+    await expect(canvas.getByTestId("current").textContent).toBe("Immediate: ");
   },
-};
+});
 
-export const DebounceCoalescesKeystrokes: Story = {
+export const DebounceCoalescesKeystrokes = meta.story({
   args: { debounceMs: 500 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -99,4 +104,4 @@ export const DebounceCoalescesKeystrokes: Story = {
       timeout: 2000,
     });
   },
-};
+});

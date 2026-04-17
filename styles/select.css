@@ -1,0 +1,257 @@
+/**
+ * outside-ui select.
+ *
+ * Covers single-value and multi-select (via Base UI's `multiple` prop on
+ * Root). Popup animates via Base UI's `data-starting-style` /
+ * `data-ending-style` attributes.
+ *
+ * Override points:
+ *   --ou-select-surface              — popup background
+ *   --ou-select-surface-fg           — popup text color
+ *   --ou-select-border               — trigger + popup border
+ *   --ou-select-radius               — trigger + popup border-radius
+ *   --ou-select-item-highlight-bg    — hovered/keyboard-highlighted item bg
+ *   --ou-select-item-selected-fg     — selected item text color
+ *   --ou-select-trigger-padding-x    — trigger horizontal padding
+ *   --ou-select-duration, --ou-select-easing
+ */
+
+@layer outside-ui.components {
+  [data-slot="select-trigger"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 10rem;
+    padding-inline: var(--ou-select-trigger-padding-x, 0.875rem);
+    background: var(--ou-select-trigger-bg, #ffffff);
+    color: var(--ou-select-trigger-fg, #111827);
+    border: 1px solid var(--ou-select-border, rgb(0 0 0 / 0.15));
+    border-radius: var(--ou-select-radius, 0.5rem);
+    font: inherit;
+    text-align: left;
+    outline: none;
+    transition:
+      border-color var(--ou-select-duration, 150ms) ease,
+      box-shadow var(--ou-select-duration, 150ms) ease;
+  }
+  [data-slot="select-trigger"][data-size="sm"] {
+    height: 2rem;
+    font-size: 0.8125rem;
+  }
+  [data-slot="select-trigger"][data-size="md"] {
+    height: 2.5rem;
+    font-size: 0.875rem;
+  }
+  [data-slot="select-trigger"][data-size="lg"] {
+    height: 3rem;
+    font-size: 1rem;
+  }
+  [data-slot="select-trigger"]:focus-visible {
+    border-color: var(--ou-ring, #2563eb);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ou-ring, #2563eb) 25%, transparent);
+  }
+  [data-slot="select-trigger"][data-popup-open] {
+    border-color: var(--ou-ring, #2563eb);
+  }
+  [data-slot="select-trigger"][aria-invalid="true"] {
+    border-color: var(--ou-select-invalid, #dc2626);
+  }
+  [data-slot="select-trigger"]:disabled,
+  [data-slot="select-trigger"][aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  [data-slot="select-trigger"][data-placeholder] [data-slot="select-value"] {
+    color: var(--ou-select-placeholder-fg, rgb(17 24 39 / 0.6));
+  }
+
+  [data-slot="select-icon"] {
+    display: inline-flex;
+    flex-shrink: 0;
+    transition: transform var(--ou-select-duration, 150ms) ease;
+    color: var(--ou-select-icon-fg, rgb(17 24 39 / 0.6));
+  }
+  [data-slot="select-trigger"][data-popup-open] [data-slot="select-icon"] {
+    transform: rotate(180deg);
+  }
+
+  /* popup — sizes to content, clamped to the trigger width as a minimum
+     and to a reasonable maximum so multi-select filter lists can breathe
+     wider than the trigger while long labels stay readable. */
+  [data-slot="select-popup"] {
+    box-sizing: border-box;
+    min-width: var(--anchor-width);
+    width: max-content;
+    max-width: min(calc(100vw - 1rem), var(--ou-select-popup-max-width, 24rem));
+    max-height: min(var(--available-height, 20rem), 24rem);
+    overflow-y: auto;
+    background: var(--ou-select-surface, #ffffff);
+    color: var(--ou-select-surface-fg, #111827);
+    border: 1px solid var(--ou-select-border, rgb(0 0 0 / 0.08));
+    border-radius: var(--ou-select-radius, 0.5rem);
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+    outline: none;
+    padding: 0.25rem;
+    transform-origin: var(--transform-origin);
+    transition:
+      opacity var(--ou-select-duration, 180ms) var(--ou-select-easing, ease),
+      transform var(--ou-select-duration, 180ms) var(--ou-select-easing, ease);
+    opacity: 1;
+    transform: scale(1);
+  }
+  [data-slot="select-popup"][data-starting-style],
+  [data-slot="select-popup"][data-ending-style] {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  [data-slot="select-list"] {
+    outline: none;
+  }
+
+  /* items */
+  [data-slot="select-item"] {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4375rem 0.625rem;
+    border-radius: calc(var(--ou-select-radius, 0.5rem) - 0.1875rem);
+    cursor: default;
+    outline: none;
+    user-select: none;
+    font-size: 0.875rem;
+  }
+  [data-slot="select-item"][data-highlighted] {
+    background: var(
+      --ou-select-item-highlight-bg,
+      color-mix(in srgb, currentColor 8%, transparent)
+    );
+  }
+  [data-slot="select-item"][data-selected] {
+    color: var(--ou-select-item-selected-fg, inherit);
+    font-weight: 500;
+  }
+  [data-slot="select-item"][data-disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  [data-slot="select-item-leading"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    grid-column: 1;
+  }
+
+  [data-slot="select-item-text"] {
+    grid-column: 2;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-slot="select-item-indicator"] {
+    grid-column: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    color: var(--ou-select-indicator-fg, currentColor);
+  }
+
+  /* Checkbox on the left — always rendered but hidden in the default
+     `checkmark` popup style. When the popup is set to `checkbox` style
+     we swap which control is visible and widen the item grid. */
+  [data-slot="select-item-checkbox"] {
+    display: none;
+  }
+  [data-slot="select-popup"][data-item-style="checkbox"] [data-slot="select-item"] {
+    grid-template-columns: auto auto 1fr;
+  }
+  [data-slot="select-popup"][data-item-style="checkbox"] [data-slot="select-item-checkbox"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    grid-column: 1;
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid var(--ou-select-checkbox-border, rgb(0 0 0 / 0.3));
+    border-radius: var(--ou-select-checkbox-radius, 0.25rem);
+    background: var(--ou-select-checkbox-bg, #ffffff);
+    color: transparent;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+  [data-slot="select-popup"][data-item-style="checkbox"] [data-slot="select-item-leading"] {
+    grid-column: 2;
+  }
+  [data-slot="select-popup"][data-item-style="checkbox"] [data-slot="select-item-text"] {
+    grid-column: 3;
+  }
+  [data-slot="select-popup"][data-item-style="checkbox"]
+    [data-slot="select-item"][data-selected]
+    [data-slot="select-item-checkbox"] {
+    background: var(--ou-select-checkbox-checked-bg, var(--ou-ring, #2563eb));
+    border-color: var(--ou-select-checkbox-checked-border, var(--ou-ring, #2563eb));
+    color: var(--ou-select-checkbox-indicator-fg, #ffffff);
+  }
+  /* In checkbox style the right-side indicator is redundant. */
+  [data-slot="select-popup"][data-item-style="checkbox"] [data-slot="select-item-indicator"] {
+    display: none;
+  }
+
+  /* groups */
+  [data-slot="select-group"] + [data-slot="select-group"] {
+    margin-top: 0.25rem;
+    border-top: 1px solid var(--ou-select-border, rgb(0 0 0 / 0.06));
+    padding-top: 0.25rem;
+  }
+  [data-slot="select-group-label"] {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ou-select-group-label-fg, rgb(17 24 39 / 0.7));
+  }
+
+  [data-slot="select-separator"] {
+    height: 1px;
+    background: var(--ou-select-border, rgb(0 0 0 / 0.06));
+    margin: 0.25rem 0;
+  }
+
+  /* scroll arrows — shown when popup overflows */
+  [data-slot="select-scroll-up"],
+  [data-slot="select-scroll-down"] {
+    position: sticky;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5rem;
+    background: linear-gradient(
+      var(--ou-select-surface, #ffffff),
+      color-mix(in srgb, var(--ou-select-surface, #ffffff), transparent 20%)
+    );
+    color: var(--ou-select-icon-fg, rgb(17 24 39 / 0.6));
+  }
+  [data-slot="select-scroll-up"] {
+    top: 0;
+  }
+  [data-slot="select-scroll-down"] {
+    bottom: 0;
+    background: linear-gradient(
+      color-mix(in srgb, var(--ou-select-surface, #ffffff), transparent 20%),
+      var(--ou-select-surface, #ffffff)
+    );
+  }
+}

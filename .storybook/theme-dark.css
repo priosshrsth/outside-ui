@@ -1,0 +1,74 @@
+/**
+ * Storybook-only dark-theme demo. Lives here (not in the published
+ * `styles/` folder) because "the right dark palette" is a product
+ * decision consumers should own. This file exists purely to exercise
+ * the library's CSS-variable override points under `data-theme="dark"`
+ * so we can visually verify components adapt.
+ *
+ * Consumers wanting a dark theme should write their own variant of this
+ * against the same `--ou-*` variables.
+ */
+
+[data-theme="dark"] {
+  background: #09090b;
+  color: #f5f5f5;
+  color-scheme: dark;
+
+  /* shared */
+  --ou-ring: #60a5fa;
+
+  /* button */
+  --ou-button-primary-bg: #f5f5f5;
+  --ou-button-primary-fg: #09090b;
+  --ou-button-secondary-bg: #27272a;
+  --ou-button-secondary-fg: #f5f5f5;
+  --ou-button-outline-fg: #f5f5f5;
+  --ou-button-outline-border: #3f3f46;
+  --ou-button-ghost-fg: #f5f5f5;
+  --ou-button-danger-bg: #dc2626;
+  --ou-button-danger-fg: #ffffff;
+  --ou-button-link-fg: #60a5fa;
+  --ou-button-link-fg-hover: #93c5fd;
+
+  /* dialog */
+  --ou-dialog-surface: #18181b;
+  --ou-dialog-surface-fg: #f5f5f5;
+  --ou-dialog-backdrop: rgb(0 0 0 / 0.7);
+  --ou-dialog-border: rgb(255 255 255 / 0.08);
+  --ou-dialog-description-fg: rgb(245 245 245 / 0.65);
+
+  /* tabs */
+  --ou-tabs-fg: rgb(245 245 245 / 0.6);
+  --ou-tabs-fg-active: #f5f5f5;
+  --ou-tabs-bg-active: #27272a;
+  --ou-tabs-indicator-color: #f5f5f5;
+  --ou-tabs-border: rgb(255 255 255 / 0.1);
+  --ou-tabs-track-bg: rgb(255 255 255 / 0.06);
+
+  /* accordion */
+  --ou-accordion-border: rgb(255 255 255 / 0.08);
+  --ou-accordion-trigger-fg: #f5f5f5;
+
+  /* select */
+  --ou-select-trigger-bg: #18181b;
+  --ou-select-trigger-fg: #f5f5f5;
+  --ou-select-surface: #18181b;
+  --ou-select-surface-fg: #f5f5f5;
+  --ou-select-border: rgb(255 255 255 / 0.12);
+  --ou-select-placeholder-fg: rgb(245 245 245 / 0.4);
+  --ou-select-icon-fg: rgb(245 245 245 / 0.6);
+  --ou-select-group-label-fg: rgb(245 245 245 / 0.55);
+
+  /* combobox */
+  --ou-combobox-trigger-bg: #18181b;
+  --ou-combobox-trigger-fg: #f5f5f5;
+  --ou-combobox-surface: #18181b;
+  --ou-combobox-surface-fg: #f5f5f5;
+  --ou-combobox-border: rgb(255 255 255 / 0.12);
+  --ou-combobox-placeholder-fg: rgb(245 245 245 / 0.4);
+  --ou-combobox-icon-fg: rgb(245 245 245 / 0.6);
+  --ou-combobox-muted-fg: rgb(245 245 245 / 0.55);
+  --ou-combobox-chip-bg: rgb(255 255 255 / 0.08);
+  --ou-combobox-chip-fg: #f5f5f5;
+  --ou-combobox-chip-highlight-bg: rgb(255 255 255 / 0.14);
+}

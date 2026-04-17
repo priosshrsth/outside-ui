@@ -25,6 +25,10 @@ export type PaginationProps = {
   activePageButtonClassName?: string;
   prevLabel?: ReactNode;
   nextLabel?: ReactNode;
+  /** Accessible label for the previous-page button. Rendered via `aria-label`. */
+  prevAriaLabel?: string;
+  /** Accessible label for the next-page button. Rendered via `aria-label`. */
+  nextAriaLabel?: string;
 };
 
 export function Pagination({
@@ -38,6 +42,8 @@ export function Pagination({
   activePageButtonClassName,
   prevLabel = <ChevronLeftIcon />,
   nextLabel = <ChevronRightIcon />,
+  prevAriaLabel = "Previous page",
+  nextAriaLabel = "Next page",
 }: PaginationProps): ReactNode {
   const ctx = useContext(SearchQueryContext);
 
@@ -115,6 +121,7 @@ export function Pagination({
 
       <div data-slot="pagination-controls">
         <button
+          aria-label={prevAriaLabel}
           className={clsx(navButtonClassName)}
           data-slot="pagination-prev"
           disabled={page <= 1}
@@ -127,6 +134,7 @@ export function Pagination({
         <div data-slot="pagination-pages">{renderPages()}</div>
 
         <button
+          aria-label={nextAriaLabel}
           className={clsx(navButtonClassName)}
           data-slot="pagination-next"
           disabled={page >= totalPages}

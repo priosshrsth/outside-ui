@@ -1,0 +1,79 @@
+/**
+ * outside-ui radio-group.
+ *
+ * Override points:
+ *   --ou-radio-size
+ *   --ou-radio-border, --ou-radio-border-hover
+ *   --ou-radio-bg, --ou-radio-checked-bg
+ *   --ou-radio-indicator-fg
+ *   --ou-radio-gap
+ */
+
+@layer outside-ui.components {
+  [data-slot="radio-group"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ou-radio-gap, 0.625rem);
+  }
+  [data-slot="radio-group"][data-orientation="horizontal"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--ou-radio-gap, 1.25rem);
+  }
+
+  [data-slot="radio"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--ou-radio-label-fg, inherit);
+  }
+  [data-slot="radio"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  [data-slot="radio-control"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--ou-radio-size, 1.125rem);
+    height: var(--ou-radio-size, 1.125rem);
+    border: 1.5px solid var(--ou-radio-border, rgb(0 0 0 / 0.35));
+    border-radius: 9999px;
+    background: var(--ou-radio-bg, #ffffff);
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  [data-slot="radio"]:hover:not([data-disabled]) [data-slot="radio-control"] {
+    border-color: var(--ou-radio-border-hover, rgb(0 0 0 / 0.55));
+  }
+  [data-slot="radio"]:focus-visible [data-slot="radio-control"] {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ou-ring, #2563eb) 30%, transparent);
+  }
+  [data-slot="radio"][data-checked] [data-slot="radio-control"] {
+    border-color: var(--ou-radio-checked-border, var(--ou-ring, #2563eb));
+    background: var(--ou-radio-checked-bg, var(--ou-ring, #2563eb));
+  }
+
+  [data-slot="radio-indicator"] {
+    width: 40%;
+    height: 40%;
+    border-radius: 9999px;
+    background: var(--ou-radio-indicator-fg, #ffffff);
+    transform: scale(0);
+    transition: transform 150ms ease;
+  }
+  [data-slot="radio"][data-checked] [data-slot="radio-indicator"] {
+    transform: scale(1);
+  }
+
+  [data-slot="radio-label"] {
+    font-size: 0.875rem;
+    user-select: none;
+  }
+}

@@ -1,0 +1,128 @@
+/**
+ * outside-ui accordion.
+ *
+ * Variants (set on Root via `variant` prop → `data-variant` attribute):
+ *   default — bordered rows, rounded container
+ *   flush   — borderless, full-width, no padding
+ *
+ * Panel height animation uses Base UI's `--accordion-panel-height` custom
+ * property, which holds the measured content height; we transition from
+ * that to 0 via the `data-starting-style` / `data-ending-style` attributes.
+ *
+ * Override points:
+ *   --ou-accordion-border        — divider color
+ *   --ou-accordion-radius        — container border-radius
+ *   --ou-accordion-trigger-fg    — trigger text color
+ *   --ou-accordion-trigger-pad   — trigger vertical padding
+ *   --ou-accordion-duration      — expand/collapse transition duration
+ *   --ou-accordion-easing        — expand/collapse easing
+ */
+
+@layer outside-ui.components {
+  [data-slot="accordion"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ========== default variant ========== */
+  [data-slot="accordion"][data-variant="default"] {
+    border: 1px solid var(--ou-accordion-border, rgb(0 0 0 / 0.08));
+    border-radius: var(--ou-accordion-radius, 0.75rem);
+    overflow: hidden;
+  }
+  [data-slot="accordion"][data-variant="default"] [data-slot="accordion-item"] {
+    border-bottom: 1px solid var(--ou-accordion-border, rgb(0 0 0 / 0.08));
+  }
+  [data-slot="accordion"][data-variant="default"] [data-slot="accordion-item"]:last-child {
+    border-bottom: 0;
+  }
+
+  /* ========== flush variant ========== */
+  [data-slot="accordion"][data-variant="flush"] [data-slot="accordion-item"] {
+    border-bottom: 1px solid var(--ou-accordion-border, rgb(0 0 0 / 0.08));
+  }
+  [data-slot="accordion"][data-variant="flush"] [data-slot="accordion-item"]:last-child {
+    border-bottom: 0;
+  }
+
+  [data-slot="accordion-header"] {
+    margin: 0;
+  }
+
+  [data-slot="accordion-trigger"] {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: var(--ou-accordion-trigger-pad, 1rem) 1.25rem;
+    font: inherit;
+    font-weight: 500;
+    color: var(--ou-accordion-trigger-fg, #111827);
+    text-align: left;
+    outline: none;
+    transition: background-color 150ms ease;
+  }
+  [data-slot="accordion-trigger"]:hover:not([data-disabled]) {
+    background-image: linear-gradient(
+      color-mix(in srgb, currentColor 5%, transparent),
+      color-mix(in srgb, currentColor 5%, transparent)
+    );
+  }
+  [data-slot="accordion-trigger"]:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--ou-ring, currentColor);
+  }
+  [data-slot="accordion-trigger"][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Indicator slot — consumers compose via <Accordion.Indicator /> and
+     place it wherever they want inside the Trigger. Empty indicator
+     renders the default chevron via `::before`; wrapping an icon inside
+     replaces the chevron but keeps the rotation on open. */
+  [data-slot="accordion-indicator"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform var(--ou-accordion-duration, 200ms) var(--ou-accordion-easing, ease);
+  }
+  /* Default chevron when no custom icon is provided */
+  [data-slot="accordion-indicator"]:empty::before {
+    content: "";
+    display: block;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translate(-2px, -2px);
+    transition: transform var(--ou-accordion-duration, 200ms) var(--ou-accordion-easing, ease);
+  }
+  [data-slot="accordion-trigger"][data-panel-open] [data-slot="accordion-indicator"]:empty::before {
+    transform: rotate(-135deg) translate(-2px, -2px);
+  }
+  /* Custom icon rotation — override in consumer CSS if a different
+     animation is wanted (e.g. plus-minus swap, fade, etc.). */
+  [data-slot="accordion-trigger"][data-panel-open] [data-slot="accordion-indicator"]:not(:empty) {
+    transform: rotate(180deg);
+  }
+
+  /* panel animation using Base UI's measured height custom property */
+  [data-slot="accordion-panel"] {
+    overflow: hidden;
+    height: var(--accordion-panel-height);
+    transition: height var(--ou-accordion-duration, 200ms) var(--ou-accordion-easing, ease);
+  }
+  [data-slot="accordion-panel"][data-starting-style],
+  [data-slot="accordion-panel"][data-ending-style] {
+    height: 0;
+  }
+
+  [data-slot="accordion-panel"] > * {
+    padding: 0 1.25rem 1rem;
+  }
+}

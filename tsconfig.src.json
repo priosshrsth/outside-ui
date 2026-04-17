@@ -1,0 +1,20 @@
+// Strict config used for building the library's published `.d.ts` files.
+// Enforces `isolatedDeclarations` on all exports — forces us to write
+// explicit types on the public surface so TypeScript can emit type
+// declarations without full inference (faster + more stable across TS
+// versions).
+//
+// This file is NOT the one the IDE / test runner use — that's the root
+// `tsconfig.json`, which is relaxed so Storybook factory types
+// (`preview.meta` / `meta.story`) don't require explicit annotations.
+//
+// Invoked implicitly by `vp pack` when generating library `.d.ts`
+// output via tsgo.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "isolatedDeclarations": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "stories", ".storybook"]
+}

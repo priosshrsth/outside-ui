@@ -1,0 +1,84 @@
+/**
+ * outside-ui table.
+ *
+ * Markup is the contract — every slot on `<Table>` has a data-slot attr.
+ * These rules are defaults; override via CSS vars, unlayered CSS, or
+ * Tailwind classes on the className props (Tailwind utilities beat our
+ * layered rules via the recommended import order).
+ *
+ * Override points:
+ *   --ou-table-border                divider + outer border
+ *   --ou-table-radius                outer border-radius
+ *   --ou-table-header-bg             thead background
+ *   --ou-table-head-fg               thead text color
+ *   --ou-table-cell-fg               tbody cell text color
+ *   --ou-table-row-hover-bg          row hover tint
+ *   --ou-table-muted-fg              loading / empty / error text
+ */
+
+@layer outside-ui.components {
+  [data-slot="table"] {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: clip;
+    border-radius: var(--ou-table-radius, 0.5rem);
+    border: 1px solid var(--ou-table-border, rgb(0 0 0 / 0.08));
+    font-size: 0.875rem;
+  }
+
+  [data-slot="table-header"] {
+    background: var(--ou-table-header-bg, rgb(0 0 0 / 0.03));
+    border-bottom: 1px solid var(--ou-table-border, rgb(0 0 0 / 0.08));
+  }
+
+  [data-slot="table-head-cell"] {
+    padding: 0.75rem 1.25rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ou-table-head-fg, rgb(17 24 39 / 0.7));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  [data-slot="table-head-cell"][data-sortable] {
+    cursor: pointer;
+    user-select: none;
+  }
+  [data-slot="table-head-cell"][data-sortable]:hover {
+    color: var(--ou-table-head-fg-hover, rgb(17 24 39 / 0.9));
+  }
+
+  [data-slot="table-head-content"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  [data-slot="table-body"] [data-slot="table-row"] {
+    border-bottom: 1px solid var(--ou-table-border, rgb(0 0 0 / 0.06));
+    transition: background-color 150ms ease;
+  }
+  [data-slot="table-body"] [data-slot="table-row"]:last-child {
+    border-bottom: 0;
+  }
+  [data-slot="table-body"] [data-slot="table-row"]:hover {
+    background: var(--ou-table-row-hover-bg, rgb(0 0 0 / 0.025));
+  }
+
+  [data-slot="table-cell"] {
+    padding: 0.875rem 1.25rem;
+    color: var(--ou-table-cell-fg, inherit);
+    vertical-align: middle;
+  }
+
+  [data-slot="table-loading"],
+  [data-slot="table-empty"],
+  [data-slot="table-error"] {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--ou-table-muted-fg, rgb(17 24 39 / 0.6));
+    font-size: 0.875rem;
+  }
+}

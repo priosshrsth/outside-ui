@@ -1,0 +1,25 @@
+/**
+ * outside-ui base resets.
+ *
+ * Applied globally to native elements. Lives in `outside-ui.base` so any
+ * unlayered consumer styles (plain classes, Tailwind utilities) win by default.
+ */
+
+@layer outside-ui.base {
+  button:not(:disabled):not([aria-disabled="true"]),
+  [role="button"]:not(:disabled):not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button[aria-disabled="true"],
+  [role="button"][aria-disabled="true"],
+  button:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  button[aria-busy="true"],
+  [role="button"][aria-busy="true"] {
+    cursor: progress;
+  }
+}

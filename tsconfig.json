@@ -23,13 +23,17 @@
     "noImplicitOverride": true,
 
     "declaration": true,
-    "isolatedDeclarations": true,
+    // `isolatedDeclarations` is enforced only on the shipped library
+    // surface via tsconfig.src.json. Turning it off here keeps stories /
+    // .storybook TypeScript clean (factory-inferred meta types can't be
+    // annotated without writing out Storybook's internal generics).
+    "isolatedDeclarations": false,
 
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
 
-  "include": ["src", "stories", ".storybook"],
+  "include": ["src", "stories", ".storybook", "globals.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,0 +1,23 @@
+/**
+ * outside-ui — all component styles.
+ *
+ * Import this file once for the full default look:
+ *   import "@anitshrsth/ui/styles.css";
+ *
+ * Or cherry-pick per component to keep CSS tree-shaken:
+ *   import "@anitshrsth/ui/styles/base.css";
+ *   import "@anitshrsth/ui/styles/button.css";
+ */
+
+@import "./base.css";
+@import "./button.css";
+@import "./dialog.css";
+@import "./tabs.css";
+@import "./accordion.css";
+@import "./select.css";
+@import "./combobox.css";
+@import "./table.css";
+@import "./pagination.css";
+@import "./toggle-group.css";
+@import "./radio-group.css";
+@import "./checkbox-group.css";

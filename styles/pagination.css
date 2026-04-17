@@ -1,0 +1,84 @@
+/**
+ * outside-ui pagination.
+ *
+ * Override points:
+ *   --ou-pagination-radius         button border-radius
+ *   --ou-pagination-muted-fg       summary + ellipsis color
+ *   --ou-pagination-active-bg      active page background
+ *   --ou-pagination-active-fg      active page text color
+ */
+
+@layer outside-ui.components {
+  [data-slot="pagination"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+  }
+
+  [data-slot="pagination-summary"] {
+    color: var(--ou-pagination-muted-fg, rgb(17 24 39 / 0.65));
+  }
+
+  [data-slot="pagination-controls"] {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  [data-slot="pagination-pages"] {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+  }
+
+  [data-slot="pagination-prev"],
+  [data-slot="pagination-next"],
+  [data-slot="pagination-page"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding-inline: 0.625rem;
+    background: transparent;
+    border: 0;
+    border-radius: var(--ou-pagination-radius, 0.375rem);
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+    line-height: 1;
+    transition:
+      background-color 150ms ease,
+      opacity 150ms ease;
+  }
+
+  [data-slot="pagination-prev"]:hover:not(:disabled),
+  [data-slot="pagination-next"]:hover:not(:disabled),
+  [data-slot="pagination-page"]:hover:not([data-active]) {
+    background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  [data-slot="pagination-prev"]:disabled,
+  [data-slot="pagination-next"]:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  [data-slot="pagination-page"][data-active] {
+    background: var(--ou-pagination-active-bg, #111827);
+    color: var(--ou-pagination-active-fg, #ffffff);
+    font-weight: 600;
+  }
+
+  [data-slot="pagination-ellipsis"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    color: var(--ou-pagination-muted-fg, rgb(17 24 39 / 0.5));
+  }
+}

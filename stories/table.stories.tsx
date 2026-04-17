@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { defaultPaginationStyles, defaultTableStyles, Pagination, Table } from "src/table";
+import preview from "../.storybook/preview";
+import { Pagination, Table } from "src/table";
 import type { SortState } from "src/table/types/type";
 
 type User = {
@@ -33,16 +33,15 @@ const sampleData: User[] = [
   },
 ];
 
-const meta: Meta<typeof Table<User>> = {
+const meta = preview.meta({
   title: "Components/Table",
   component: Table<User>,
   tags: ["autodocs"],
-};
+});
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     data: sampleData,
     columns: [
@@ -51,7 +50,6 @@ export const Default: Story = {
       { accessor: "email" },
       { accessor: "role" },
     ],
-    ...defaultTableStyles,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -65,52 +63,49 @@ export const Default: Story = {
     await expect(canvas.getByText("Name")).toBeInTheDocument();
     await expect(canvas.getByText("Email")).toBeInTheDocument();
   },
-};
+});
 
-export const Loading: Story = {
+export const Loading = meta.story({
   args: {
     data: [],
     columns: [{ accessor: "id" }, { accessor: "name" }],
     isLoading: true,
-    ...defaultTableStyles,
   },
   play: async ({ canvasElement }) => {
     const loading = canvasElement.querySelector('[data-slot="table-loading"]');
     await expect(loading).toBeInTheDocument();
     await expect(loading).toHaveTextContent("Loading");
   },
-};
+});
 
-export const Empty: Story = {
+export const Empty = meta.story({
   args: {
     data: [],
     columns: [{ accessor: "id" }, { accessor: "name" }],
     emptyMessage: "No users found.",
-    ...defaultTableStyles,
   },
   play: async ({ canvasElement }) => {
     const empty = canvasElement.querySelector('[data-slot="table-empty"]');
     await expect(empty).toBeInTheDocument();
     await expect(empty).toHaveTextContent("No users found.");
   },
-};
+});
 
-export const Error: Story = {
+export const Error = meta.story({
   args: {
     data: [],
     columns: [{ accessor: "id" }, { accessor: "name" }],
     isError: true,
     errorMessage: "Failed to load users.",
-    ...defaultTableStyles,
   },
   play: async ({ canvasElement }) => {
     const errorEl = canvasElement.querySelector('[data-slot="table-error"]');
     await expect(errorEl).toBeInTheDocument();
     await expect(errorEl).toHaveTextContent("Failed to load users.");
   },
-};
+});
 
-export const WithSorting: Story = {
+export const WithSorting = meta.story({
   args: {
     data: sampleData,
     columns: [
@@ -121,7 +116,6 @@ export const WithSorting: Story = {
     ],
     sort: { field: "name", direction: "asc" },
     onSortChange: fn(),
-    ...defaultTableStyles,
   },
   play: async ({ args, canvasElement }) => {
     const nameHeader = canvasElement.querySelector('th[data-sortable][data-sort-direction="asc"]');
@@ -137,9 +131,9 @@ export const WithSorting: Story = {
       direction: "desc",
     });
   },
-};
+});
 
-export const SortingToggle: Story = {
+export const SortingToggle = meta.story({
   args: { data: [], columns: [] },
   render: () => {
     const [sort, setSort] = useState<SortState>({
@@ -158,7 +152,6 @@ export const SortingToggle: Story = {
         data={sampleData}
         onSortChange={setSort}
         sort={sort}
-        {...defaultTableStyles}
       />
     );
   },
@@ -182,9 +175,9 @@ export const SortingToggle: Story = {
     header = getNameHeader();
     await expect(header).toHaveAttribute("data-sort-direction", "asc");
   },
-};
+});
 
-export const WithPagination: Story = {
+export const WithPagination = meta.story({
   args: { data: [], columns: [] },
   render: () => {
     const [page, setPage] = useState(1);
@@ -198,14 +191,12 @@ export const WithPagination: Story = {
           data={paged}
           page={page}
           pageSize={pageSize}
-          {...defaultTableStyles}
         />
         <Pagination
           onPageChange={setPage}
           page={page}
           pageSize={pageSize}
           total={sampleData.length}
-          {...defaultPaginationStyles}
         />
       </div>
     );
@@ -227,9 +218,9 @@ export const WithPagination: Story = {
     await expect(canvas.getByText("John Smith")).toBeInTheDocument();
     await expect(canvas.queryByText("Anit Shrestha")).toBeNull();
   },
-};
+});
 
-export const CustomCellRenderer: Story = {
+export const CustomCellRenderer = meta.story({
   args: {
     data: sampleData,
     columns: [
@@ -240,7 +231,6 @@ export const CustomCellRenderer: Story = {
         cell: (row) => <span data-testid={`role-badge-${row.id}`}>{row.role}</span>,
       },
     ],
-    ...defaultTableStyles,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -250,4 +240,4 @@ export const CustomCellRenderer: Story = {
     const editorBadge = canvas.getByTestId("role-badge-2");
     await expect(editorBadge).toHaveTextContent("Editor");
   },
-};
+});

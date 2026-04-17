@@ -1,0 +1,183 @@
+/**
+ * outside-ui dialog.
+ *
+ * Animations are driven by Base UI's lifecycle data attributes:
+ *   [data-starting-style] — applied for one frame on mount (enter start state)
+ *   [data-ending-style]   — applied while unmounting (exit target state)
+ *   [data-open] / [data-closed] — steady states
+ *
+ * Position variants are selected via `[data-position]`:
+ *   center, sheet-right, sheet-left, sheet-top, sheet-bottom, fullscreen
+ *
+ * Override points:
+ *   --ou-dialog-backdrop            — backdrop fill
+ *   --ou-dialog-surface             — popup background
+ *   --ou-dialog-surface-fg          — popup text color
+ *   --ou-dialog-radius              — popup border-radius
+ *   --ou-dialog-max-width           — center popup width cap
+ *   --ou-dialog-sheet-size          — sheet popup size along its axis
+ *   --ou-dialog-duration            — transition duration
+ *   --ou-dialog-easing              — transition easing
+ */
+
+@layer outside-ui.components {
+  [data-slot="dialog-backdrop"] {
+    position: fixed;
+    inset: 0;
+    background: var(--ou-dialog-backdrop, rgb(0 0 0 / 0.5));
+    opacity: 1;
+    transition:
+      opacity var(--ou-dialog-duration, 200ms) var(--ou-dialog-easing, ease),
+      backdrop-filter var(--ou-dialog-duration, 200ms) var(--ou-dialog-easing, ease);
+  }
+
+  [data-slot="dialog-backdrop"][data-starting-style],
+  [data-slot="dialog-backdrop"][data-ending-style] {
+    opacity: 0;
+  }
+
+  [data-slot="dialog-popup"] {
+    position: fixed;
+    background: var(--ou-dialog-surface, #ffffff);
+    color: var(--ou-dialog-surface-fg, #111827);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    outline: none;
+    transition:
+      opacity var(--ou-dialog-duration, 200ms) var(--ou-dialog-easing, ease),
+      transform var(--ou-dialog-duration, 200ms) var(--ou-dialog-easing, ease);
+  }
+
+  /* center — modal dialog */
+  [data-slot="dialog-popup"][data-position="center"] {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    width: min(calc(100vw - 2rem), var(--ou-dialog-max-width, 32rem));
+    max-height: calc(100vh - 2rem);
+    border-radius: var(--ou-dialog-radius, 0.75rem);
+    opacity: 1;
+  }
+  [data-slot="dialog-popup"][data-position="center"][data-starting-style],
+  [data-slot="dialog-popup"][data-position="center"][data-ending-style] {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  /* sheet-right */
+  [data-slot="dialog-popup"][data-position="sheet-right"] {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    width: min(100vw, var(--ou-dialog-sheet-size, 28rem));
+    border-left: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.08));
+    transform: translateX(0);
+  }
+  [data-slot="dialog-popup"][data-position="sheet-right"][data-starting-style],
+  [data-slot="dialog-popup"][data-position="sheet-right"][data-ending-style] {
+    transform: translateX(100%);
+  }
+
+  /* sheet-left */
+  [data-slot="dialog-popup"][data-position="sheet-left"] {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+    width: min(100vw, var(--ou-dialog-sheet-size, 28rem));
+    border-right: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.08));
+    transform: translateX(0);
+  }
+  [data-slot="dialog-popup"][data-position="sheet-left"][data-starting-style],
+  [data-slot="dialog-popup"][data-position="sheet-left"][data-ending-style] {
+    transform: translateX(-100%);
+  }
+
+  /* sheet-top */
+  [data-slot="dialog-popup"][data-position="sheet-top"] {
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-height: min(100vh, var(--ou-dialog-sheet-size, 20rem));
+    border-bottom: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.08));
+    transform: translateY(0);
+  }
+  [data-slot="dialog-popup"][data-position="sheet-top"][data-starting-style],
+  [data-slot="dialog-popup"][data-position="sheet-top"][data-ending-style] {
+    transform: translateY(-100%);
+  }
+
+  /* sheet-bottom */
+  [data-slot="dialog-popup"][data-position="sheet-bottom"] {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-height: min(100vh, var(--ou-dialog-sheet-size, 28rem));
+    border-top: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.08));
+    border-radius: var(--ou-dialog-radius, 0.75rem) var(--ou-dialog-radius, 0.75rem) 0 0;
+    transform: translateY(0);
+  }
+  [data-slot="dialog-popup"][data-position="sheet-bottom"][data-starting-style],
+  [data-slot="dialog-popup"][data-position="sheet-bottom"][data-ending-style] {
+    transform: translateY(100%);
+  }
+
+  /* fullscreen */
+  [data-slot="dialog-popup"][data-position="fullscreen"] {
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    transform: scale(1);
+    opacity: 1;
+  }
+  [data-slot="dialog-popup"][data-position="fullscreen"][data-starting-style],
+  [data-slot="dialog-popup"][data-position="fullscreen"][data-ending-style] {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  /* layout helpers — consumers can skip these and compose their own */
+  [data-slot="dialog-header"] {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.06));
+  }
+
+  [data-slot="dialog-body"] {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  [data-slot="dialog-footer"] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--ou-dialog-border, rgb(0 0 0 / 0.06));
+  }
+
+  [data-slot="dialog-title"] {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  [data-slot="dialog-description"] {
+    font-size: 0.875rem;
+    color: var(--ou-dialog-description-fg, rgb(17 24 39 / 0.65));
+    line-height: 1.5;
+    margin: 0.25rem 0 0 0;
+  }
+}

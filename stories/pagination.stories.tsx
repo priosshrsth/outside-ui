@@ -1,53 +1,49 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { defaultPaginationStyles, Pagination } from "src/table";
+import preview from "../.storybook/preview";
+import { Pagination } from "src/table";
 
-const meta: Meta<typeof Pagination> = {
+const meta = preview.meta({
   title: "Components/Pagination",
   component: Pagination,
   tags: ["autodocs"],
-};
+});
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     page: 1,
     pageSize: 10,
     total: 30,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByText(/Showing 1–10 of 30 results/i)).toBeInTheDocument();
   },
-};
+});
 
-export const HiddenWhenSinglePage: Story = {
+export const HiddenWhenSinglePage = meta.story({
   args: {
     page: 1,
     pageSize: 10,
     total: 5,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ canvasElement }) => {
     const nav = canvasElement.querySelector('[data-slot="pagination"]');
     await expect(nav).toBeNull();
   },
-};
+});
 
-export const PrevDisabledOnFirstPage: Story = {
+export const PrevDisabledOnFirstPage = meta.story({
   args: {
     page: 1,
     pageSize: 10,
     total: 50,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ canvasElement }) => {
     const prev = canvasElement.querySelector(
@@ -60,15 +56,14 @@ export const PrevDisabledOnFirstPage: Story = {
     await expect(prev).toBeDisabled();
     await expect(next).not.toBeDisabled();
   },
-};
+});
 
-export const NextDisabledOnLastPage: Story = {
+export const NextDisabledOnLastPage = meta.story({
   args: {
     page: 5,
     pageSize: 10,
     total: 50,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ canvasElement }) => {
     const prev = canvasElement.querySelector(
@@ -81,15 +76,14 @@ export const NextDisabledOnLastPage: Story = {
     await expect(prev).not.toBeDisabled();
     await expect(next).toBeDisabled();
   },
-};
+});
 
-export const ClickNextCallsOnPageChange: Story = {
+export const ClickNextCallsOnPageChange = meta.story({
   args: {
     page: 2,
     pageSize: 10,
     total: 100,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ args, canvasElement }) => {
     const next = canvasElement.querySelector(
@@ -101,15 +95,14 @@ export const ClickNextCallsOnPageChange: Story = {
     }
     await expect(args.onPageChange).toHaveBeenCalledWith(3);
   },
-};
+});
 
-export const ClickPageButton: Story = {
+export const ClickPageButton = meta.story({
   args: {
     page: 1,
     pageSize: 10,
     total: 30,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ args, canvasElement }) => {
     const pageButtons = canvasElement.querySelectorAll('[data-slot="pagination-page"]');
@@ -121,15 +114,14 @@ export const ClickPageButton: Story = {
     }
     await expect(args.onPageChange).toHaveBeenCalledWith(2);
   },
-};
+});
 
-export const ActivePageMarked: Story = {
+export const ActivePageMarked = meta.story({
   args: {
     page: 2,
     pageSize: 10,
     total: 30,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ canvasElement }) => {
     const active = canvasElement.querySelector('[data-slot="pagination-page"][data-active]');
@@ -137,34 +129,25 @@ export const ActivePageMarked: Story = {
     await expect(active).toHaveTextContent("2");
     await expect(active).toHaveAttribute("aria-current", "page");
   },
-};
+});
 
-export const EllipsisForManyPages: Story = {
+export const EllipsisForManyPages = meta.story({
   args: {
     page: 10,
     pageSize: 10,
     total: 500,
     onPageChange: fn(),
-    ...defaultPaginationStyles,
   },
   play: async ({ canvasElement }) => {
     const ellipses = canvasElement.querySelectorAll('[data-slot="pagination-ellipsis"]');
     await expect(ellipses.length).toBeGreaterThan(0);
   },
-};
+});
 
-export const Interactive: Story = {
+export const Interactive = meta.story({
   render: () => {
     const [page, setPage] = useState(1);
-    return (
-      <Pagination
-        onPageChange={setPage}
-        page={page}
-        pageSize={10}
-        total={100}
-        {...defaultPaginationStyles}
-      />
-    );
+    return <Pagination onPageChange={setPage} page={page} pageSize={10} total={100} />;
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -180,4 +163,4 @@ export const Interactive: Story = {
 
     await expect(canvas.getByText(/Showing 11–20 of 100 results/i)).toBeInTheDocument();
   },
-};
+});

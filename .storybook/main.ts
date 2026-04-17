@@ -5,7 +5,12 @@ import { defineMain } from "@storybook/react-vite/node";
 export default defineMain({
   framework: "@storybook/react-vite",
   stories: ["../stories/**/*.mdx", "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: ["@storybook/addon-docs", "@storybook/addon-a11y", "@storybook/addon-vitest"],
+  addons: [
+    "@storybook/addon-docs",
+    "@storybook/addon-a11y",
+    "@storybook/addon-vitest",
+    "@chromatic-com/storybook",
+  ],
   viteFinal(config) {
     config.resolve ??= {};
     const existingAlias = config.resolve.alias;

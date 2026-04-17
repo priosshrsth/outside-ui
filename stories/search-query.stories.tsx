@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useEffect } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+import preview from "../.storybook/preview";
 import { SearchQueryProvider, useSearchQuery } from "src/search-query";
-import { defaultPaginationStyles, defaultTableStyles, Pagination, Table } from "src/table";
+import { Pagination, Table } from "src/table";
 
 type User = { id: string; name: string; email: string };
 
@@ -32,6 +32,7 @@ function UserList(): ReactNode {
   return (
     <div>
       <input
+        aria-label="Search users"
         data-testid="search-input"
         onChange={handleSearch}
         placeholder="Search"
@@ -42,23 +43,21 @@ function UserList(): ReactNode {
       <Table
         columns={[{ accessor: "id", header: "#" }, { accessor: "name" }, { accessor: "email" }]}
         data={paged}
-        {...defaultTableStyles}
       />
-      <Pagination {...defaultPaginationStyles} />
+      <Pagination />
     </div>
   );
 }
 
-const meta: Meta<typeof SearchQueryProvider> = {
+const meta = preview.meta({
   title: "Hooks/SearchQueryProvider",
   component: SearchQueryProvider,
   tags: ["autodocs"],
-};
+});
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Default = meta.story({
   args: { children: null },
   render: () => (
     <SearchQueryProvider defaultValues={{ page: 1, limit: 5 }}>
@@ -74,9 +73,9 @@ export const Default: Story = {
     const rows = canvasElement.querySelectorAll('[data-slot="table-body"] [data-slot="table-row"]');
     await expect(rows).toHaveLength(5);
   },
-};
+});
 
-export const Paginates: Story = {
+export const Paginates = meta.story({
   name: "Paginates via Pagination component",
   args: { children: null },
   render: () => (
@@ -100,9 +99,9 @@ export const Paginates: Story = {
     await expect(canvas.getByText("User 6")).toBeInTheDocument();
     await expect(canvas.queryByText("User 1")).toBeNull();
   },
-};
+});
 
-export const DebouncedSearchResetsPage: Story = {
+export const DebouncedSearchResetsPage = meta.story({
   name: "Search resets page and filters",
   args: { children: null },
   render: () => (
@@ -124,4 +123,4 @@ export const DebouncedSearchResetsPage: Story = {
 
     await waitFor(() => expect(canvas.getByText("User 1")).toBeInTheDocument(), { timeout: 2000 });
   },
-};
+});
