@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { useCallback, useRef, useState } from "react";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import preview from "../.storybook/preview";
 import { Pagination, Table } from "src/table";
@@ -217,6 +217,76 @@ export const WithPagination = meta.story({
 
     await expect(canvas.getByText("John Smith")).toBeInTheDocument();
     await expect(canvas.queryByText("Anit Shrestha")).toBeNull();
+  },
+});
+
+export const WithLoadMore = meta.story({
+  args: { data: [], columns: [] },
+  render: () => {
+    const [page, setPage] = useState(1);
+    const [isFetching, setIsFetching] = useState(false);
+    const initial: User[] = [
+      { id: "1", name: "User 1", email: "u1@example.com", role: "Admin" },
+      { id: "2", name: "User 2", email: "u2@example.com", role: "Editor" },
+      { id: "3", name: "User 3", email: "u3@example.com", role: "Viewer" },
+    ];
+    const [rows, setRows] = useState<User[]>(initial);
+    const hasMore = page < 3;
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const loadMore = useCallback(() => {
+      if (!hasMore || isFetching) return;
+      setIsFetching(true);
+      timerRef.current = setTimeout(() => {
+        const next = page + 1;
+        setRows((prev) => [
+          ...prev,
+          {
+            id: String(prev.length + 1),
+            name: `User ${prev.length + 1}`,
+            email: `u${prev.length + 1}@example.com`,
+            role: "Viewer",
+          },
+        ]);
+        setPage(next);
+        setIsFetching(false);
+      }, 120);
+    }, [hasMore, isFetching, page]);
+
+    return (
+      <Table
+        columns={[
+          { accessor: "id", header: "#" },
+          { accessor: "name" },
+          { accessor: "email" },
+          { accessor: "role" },
+        ]}
+        data={rows}
+        hasMore={hasMore}
+        isFetchingMore={isFetching}
+        onLoadMore={loadMore}
+      />
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("User 1")).toBeInTheDocument();
+
+    // Sentinel should exist while more is available
+    const sentinel = canvasElement.querySelector('[data-slot="table-load-more-sentinel"]');
+    await expect(sentinel).not.toBeNull();
+
+    // Scroll it into view to trigger onLoadMore — fall back to scrollIntoView
+    if (sentinel instanceof HTMLElement) {
+      sentinel.scrollIntoView();
+    }
+
+    await waitFor(
+      () => {
+        void expect(canvasElement.textContent).toMatch(/User 4/);
+      },
+      { timeout: 2000 },
+    );
   },
 });
 

@@ -75,10 +75,50 @@
 
   [data-slot="table-loading"],
   [data-slot="table-empty"],
-  [data-slot="table-error"] {
+  [data-slot="table-error"],
+  [data-slot="table-load-more"] {
     padding: 2rem 1rem;
     text-align: center;
     color: var(--ou-table-muted-fg, rgb(17 24 39 / 0.6));
     font-size: 0.875rem;
+  }
+
+  /**
+   * VirtualTable — div-based, grid-row layout. Inherits the same
+   * override CSS variables as the semantic Table. Row cells inherit
+   * padding from `[data-slot="table-cell"]` above; extra rules here
+   * only cover what grid layout needs.
+   */
+  [data-slot="table"][data-variant="virtual"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-slot="table"][data-variant="virtual"] [data-slot="table-header"] {
+    /* Row uses display: grid inline; nothing to override here. */
+  }
+
+  [data-slot="table"][data-variant="virtual"] [data-slot="table-head-cell"] {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  [data-slot="table"][data-variant="virtual"]
+    [data-slot="table-head-cell"][data-sortable]:focus-visible {
+    outline: 2px solid var(--ou-table-focus-ring, rgb(59 130 246 / 0.5));
+    outline-offset: -2px;
+  }
+
+  [data-slot="table-scroll"] {
+    min-height: 0;
+  }
+
+  [data-slot="table"][data-variant="virtual"] [data-slot="table-row"] {
+    border-bottom: 1px solid var(--ou-table-border, rgb(0 0 0 / 0.06));
+    transition: background-color 150ms ease;
+  }
+
+  [data-slot="table"][data-variant="virtual"] [data-slot="table-row"]:hover {
+    background: var(--ou-table-row-hover-bg, rgb(0 0 0 / 0.025));
   }
 }

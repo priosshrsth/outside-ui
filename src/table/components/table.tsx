@@ -11,8 +11,16 @@ import clsx from "clsx";
 import { type ReactNode, useContext, useMemo, useRef } from "react";
 
 import { SearchQueryContext } from "src/search-query/contexts/search-query-context";
+import { useTableLoadMore } from "src/table/hooks/use-table-load-more";
 import { SortAscIcon, SortDefaultIcon, SortDescIcon } from "src/table/components/icons";
-import type { ColumnDef, RowData, SortDirection, SortIcons, SortState } from "src/table/types/type";
+import type {
+  ColumnDef,
+  LoadMoreProps,
+  RowData,
+  SortDirection,
+  SortIcons,
+  SortState,
+} from "src/table/types/type";
 
 type TableClassNames = {
   className?: string;
@@ -23,34 +31,35 @@ type TableClassNames = {
   tdClassName?: string;
 };
 
-export type TableProps<TData extends RowData> = TableClassNames & {
-  data: TData[];
-  columns: ColumnDef<TData>[];
+export type TableProps<TData extends RowData> = TableClassNames &
+  LoadMoreProps & {
+    data: TData[];
+    columns: ColumnDef<TData>[];
 
-  /** Loading state — shows skeleton/placeholder rows */
-  isLoading?: boolean;
-  /** Content shown when data is empty and not loading */
-  emptyMessage?: ReactNode;
-  /** Error state flag */
-  isError?: boolean;
-  /** Content shown when isError is true */
-  errorMessage?: ReactNode;
+    /** Loading state — shows skeleton/placeholder rows */
+    isLoading?: boolean;
+    /** Content shown when data is empty and not loading */
+    emptyMessage?: ReactNode;
+    /** Error state flag */
+    isError?: boolean;
+    /** Content shown when isError is true */
+    errorMessage?: ReactNode;
 
-  /** Server-side sort state */
-  sort?: SortState;
-  /** Called when a sortable column header is clicked */
-  onSortChange?: (sort: SortState) => void;
-  /**
-   * Customize the three sort indicator icons (ascending, descending, inactive).
-   * Any icon omitted falls back to the built-in SVG default.
-   */
-  sortIcons?: SortIcons;
+    /** Server-side sort state */
+    sort?: SortState;
+    /** Called when a sortable column header is clicked */
+    onSortChange?: (sort: SortState) => void;
+    /**
+     * Customize the three sort indicator icons (ascending, descending, inactive).
+     * Any icon omitted falls back to the built-in SVG default.
+     */
+    sortIcons?: SortIcons;
 
-  /** Page number (1-indexed). Falls back to SearchQueryProvider context if omitted */
-  page?: number;
-  /** Page size. Falls back to SearchQueryProvider context if omitted */
-  pageSize?: number;
-};
+    /** Page number (1-indexed). Falls back to SearchQueryProvider context if omitted */
+    page?: number;
+    /** Page size. Falls back to SearchQueryProvider context if omitted */
+    pageSize?: number;
+  };
 
 function renderSortIcon(direction: SortDirection | null, icons: SortIcons | undefined): ReactNode {
   if (direction === "asc") {
@@ -90,6 +99,12 @@ export function Table<TData extends RowData>({
   sortIcons,
   page: pageProp,
   pageSize: pageSizeProp,
+  onLoadMore,
+  hasMore,
+  isFetchingMore = false,
+  loadMoreLabel = "Loading more…",
+  loadMoreThreshold,
+  loadMoreRootMargin,
 }: TableProps<TData>): ReactNode {
   const searchQueryCtx = useContext(SearchQueryContext);
   const page = pageProp ?? searchQueryCtx.searchQuery.page;
@@ -127,6 +142,16 @@ export function Table<TData extends RowData>({
     manualSorting: true,
   });
 
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useTableLoadMore({
+    sentinelRef,
+    onLoadMore,
+    hasMore,
+    isFetchingMore,
+    threshold: loadMoreThreshold,
+    rootMargin: loadMoreRootMargin,
+  });
+
   const handleSort = (accessor: string) => {
     if (!onSortChange) {
       return;
@@ -140,6 +165,7 @@ export function Table<TData extends RowData>({
   const colCount = columns.length;
   const showEmpty = !(isLoading || isError) && data.length === 0;
   const showError = !isLoading && isError;
+  const showRows = !(isLoading || isError || showEmpty);
 
   return (
     <table className={clsx(className)} data-slot="table">
@@ -199,7 +225,7 @@ export function Table<TData extends RowData>({
           </tr>
         )}
 
-        {!(isLoading || isError) &&
+        {showRows &&
           table.getRowModel().rows.map((row) => (
             <tr className={trClassName} data-slot="table-row" key={row.id}>
               {row.getVisibleCells().map((cell) => {
@@ -216,6 +242,22 @@ export function Table<TData extends RowData>({
               })}
             </tr>
           ))}
+
+        {showRows && onLoadMore && (
+          <tr data-slot="table-load-more-row" aria-hidden="true">
+            <td colSpan={colCount} style={{ padding: 0, border: 0 }}>
+              <div ref={sentinelRef} data-slot="table-load-more-sentinel" style={{ height: 1 }} />
+            </td>
+          </tr>
+        )}
+
+        {isFetchingMore && (
+          <tr className={trClassName} data-slot="table-load-more-row">
+            <td className={tdClassName} colSpan={colCount} data-slot="table-cell">
+              <div data-slot="table-load-more">{loadMoreLabel}</div>
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
