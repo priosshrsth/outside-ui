@@ -17,4 +17,5 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .turbo
-prios-local-docs
+*.tgz
+.claude/*.lock
