@@ -1,0 +1,173 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Getting started" />
+
+# @anitshrsth/ui
+
+A React component library for data-rich UIs. Headless primitives wrapped
+for a consistent design system, plus a TanStack-Form-powered form layer
+that works with any Standard Schema validator (zod, valibot, arktype…).
+
+---
+
+## Install
+
+```sh
+bun add @anitshrsth/ui @base-ui/react react react-dom clsx
+# form layer is opt-in:
+bun add @tanstack/react-form
+# if you use validation schemas:
+bun add zod    # or valibot / arktype — anything Standard Schema v1
+```
+
+Peer dependencies: `react >= 19`, `@base-ui/react ^1.4`, `clsx`. The form
+layer additionally needs `@tanstack/react-form ^1.29`.
+
+---
+
+## Styles
+
+Every component ships unstyled by default — layout behaviour via
+`data-slot` attributes, no bundled CSS — but the library also ships a
+sensible default skin you can opt into.
+
+### Option A — one-shot import (easiest)
+
+```ts
+import "@anitshrsth/ui/styles.css";
+```
+
+Pulls every component's default styling.
+
+### Option B — cherry-pick per component (tree-shakes the CSS)
+
+```ts
+import "@anitshrsth/ui/styles/base.css"; // required — native element resets
+import "@anitshrsth/ui/styles/button.css";
+import "@anitshrsth/ui/styles/form.css";
+import "@anitshrsth/ui/styles/select.css";
+// …only the components you use
+```
+
+---
+
+## Tailwind v4 compatibility
+
+Tailwind v4 Preflight lives in `@layer base` and will strip padding /
+border / cursor defaults from this library's components unless you
+declare cascade-layer order once, at the top of your global stylesheet,
+**before any `@import`**:
+
+```css
+@layer theme, base, components, outside-ui, utilities;
+@import "@anitshrsth/ui/styles.css";
+@import "tailwindcss";
+```
+
+This slots `outside-ui` between Tailwind's `base` (so Preflight stops
+winning) and `utilities` (so Tailwind classes like `className="w-full"`
+still override library decoration). Apps that don't use Tailwind can
+skip this.
+
+---
+
+## Forms — a 60-second tour
+
+The form layer wraps [TanStack
+Form](https://tanstack.com/form/latest). You get pre-wired field
+components that handle label / description / error chrome and the
+"validate on first submit, then eager" UX.
+
+```tsx
+import { useAppForm } from "@anitshrsth/ui/form";
+import { z } from "zod";
+
+const schema = z.object({
+  email: z.string().email(),
+  plan: z.enum(["free", "pro"]),
+  agree: z.literal(true),
+});
+
+export function SignupForm() {
+  const form = useAppForm({
+    defaultValues: { email: "", plan: "free", agree: false },
+    validators: { onSubmit: schema, onChange: schema },
+    onSubmit: async ({ value }) => {
+      await api.signup(value);
+    },
+  });
+
+  return (
+    <form.AppForm>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void form.handleSubmit();
+        }}
+      >
+        <form.TextField name="email" label="Email" type="email" />
+        <form.RadioGroupField
+          name="plan"
+          label="Plan"
+          options={[
+            { value: "free", label: "Free" },
+            { value: "pro", label: "Pro" },
+          ]}
+        />
+        <form.CheckboxField name="agree" label="I agree" required />
+        <form.SubmitButton pendingLabel="Saving…">Sign up</form.SubmitButton>
+      </form>
+    </form.AppForm>
+  );
+}
+```
+
+See the **Components / FormFields** sidebar group for interactive
+demos of every field type, and the component-specific docs pages for
+the full prop reference.
+
+### Validation behaviour
+
+Errors stay hidden until the user clicks Submit at least once. After
+that first submission attempt, validation runs eagerly on every
+change — the typical "show me what's wrong once I've tried" pattern.
+
+Pass the same schema to both `validators.onSubmit` (so the submit
+attempt surfaces errors) and `validators.onChange` (so eager updates
+happen afterwards).
+
+### Adding project-specific fields
+
+Use `extendForm` rather than calling `createFormHook` from scratch —
+your custom fields then coexist with the library's built-ins and share
+the same `fieldContext` / `formContext`:
+
+```ts
+import { extendForm } from "@anitshrsth/ui/form";
+import { DatePickerField } from "./date-picker-field";
+
+export const { useAppForm } = extendForm({
+  fieldComponents: { DatePickerField },
+  formComponents: {},
+});
+```
+
+---
+
+## Tests
+
+Every story doubles as a test. Playwright runs the `play` functions
+from stories under headless Chromium; `bun run test` runs the full
+suite. Accessibility is enforced at `a11y: { test: "error" }` — axe
+violations fail the suite.
+
+---
+
+## Getting help
+
+- Browse component stories in the sidebar → each has a live **Canvas**
+  and an auto-generated **Docs** tab with a props table.
+- Hand-authored MDX docs (like this page) live in `stories/*.mdx` in
+  the repo.
+- Every component targets its state via `data-slot` / `data-*`
+  attributes — use those in your own CSS to skin or override.

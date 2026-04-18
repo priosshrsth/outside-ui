@@ -7,7 +7,12 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "jsx": "react-jsx",
-    "types": ["node"],
+    // `vite/client` ships ambient declarations for CSS / SVG / image
+    // side-effect imports. Loading it via `types` (rather than only
+    // via our local globals.d.ts) means those declarations come from
+    // node_modules and are always in the type graph — including when
+    // the pre-commit hook type-checks a subset of staged files.
+    "types": ["node", "vite/client"],
 
     "paths": {
       "src/*": ["./src/*"]

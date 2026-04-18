@@ -1,0 +1,141 @@
+import { Canvas, Controls, Meta, Primary } from "@storybook/addon-docs/blocks";
+
+import * as FormInputStories from "./form-input.stories";
+
+<Meta of={FormInputStories} />
+
+# FormInput / `form.TextField`
+
+A single-line text input with the standard label / description / error
+chrome. Two entry points — pick the one that fits:
+
+- **`<form.TextField name="email" label="Email" />`** — the one-liner.
+  Registered on `useAppForm`, hides the TanStack Form render prop.
+  Use this for 95% of forms.
+- **`<FormInput label="Email" />`** — the underlying field component.
+  Use it inside `<form.AppField>`'s render prop when you need to
+  read field state for conditional rendering (showing a hint when
+  the field is dirty, swapping icons based on value, etc.).
+
+---
+
+## Demo
+
+<Canvas of={FormInputStories.Default} />
+
+Column vs row layout, prepend/append affixes, the validation story, and
+the disabled state all live in the sidebar under
+**Components / FormInput**.
+
+### Prepend / append affixes
+
+<Canvas of={FormInputStories.WithPrependAndAppend} />
+
+### Row layout
+
+Switch **layout** in the Controls panel, or set it on the component:
+
+```tsx
+<form.TextField name="email" label="Email" layout="row" labelWidth="9rem" />
+```
+
+### Disabled
+
+<Canvas of={FormInputStories.Disabled} />
+
+### Lazy-then-eager validation
+
+<Canvas of={FormInputStories.Validation} />
+
+Errors don't render until the user submits at least once. After that
+first submit attempt, validation runs eagerly on change. Wire it by
+attaching the same schema / validator to both `onSubmit` and `onChange`
+on the field or the form — the display gate is built into the
+component itself.
+
+---
+
+## Props
+
+<Controls of={FormInputStories.Default} />
+
+`form.TextField` accepts everything `FormInput` does, plus:
+
+| Prop         | Type                  | Description                                                                                                                 |
+| ------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `name`       | `string`              | Dotted field path in the form values (e.g. `"user.email"`). Required.                                                       |
+| `validators` | `FormFieldValidators` | TanStack Form field-level validators. Pass a Standard Schema (zod / valibot) or `{ onSubmit, onChange, onBlur }` functions. |
+
+All native `<input>` props (`type`, `placeholder`, `autoComplete`,
+`inputMode`, `maxLength`, …) are forwarded.
+
+---
+
+## CSS hooks
+
+Style via these selectors; the library only ships structural CSS, so
+you can skin freely without `!important`.
+
+| Selector                                      | Element                                |
+| --------------------------------------------- | -------------------------------------- |
+| `[data-slot="form-field"]`                    | Outer grid container                   |
+| `[data-slot="form-field"][data-layout="row"]` | Row-layout variant                     |
+| `[data-slot="form-field"][data-invalid]`      | Container when error is displayed      |
+| `[data-slot="form-field"][data-disabled]`     | Container when disabled                |
+| `[data-slot="form-label"]`                    | `<label>`                              |
+| `[data-slot="form-required"]`                 | Required-indicator `*` span            |
+| `[data-slot="form-control"]`                  | Input box (border, radius, focus ring) |
+| `[data-slot="form-input"]`                    | The `<input>` itself                   |
+| `[data-slot="form-prepend"]`                  | Left affix slot                        |
+| `[data-slot="form-append"]`                   | Right affix slot                       |
+| `[data-slot="form-description"]`              | Helper text                            |
+| `[data-slot="form-message"]`                  | Error alert                            |
+
+### CSS variable overrides
+
+`styles/form.css` consumes these; override at `:root`, on a container,
+or inline per instance:
+
+| Variable                           | Default                   | Purpose                                                                    |
+| ---------------------------------- | ------------------------- | -------------------------------------------------------------------------- |
+| `--ou-form-gap`                    | `0.375rem`                | Vertical rhythm in column layout                                           |
+| `--ou-form-col-gap`                | `1rem`                    | Gap between label and control in row layout                                |
+| `--ou-form-row-gap`                | `0.375rem`                | Vertical rhythm in row layout                                              |
+| `--ou-form-label-width`            | `10rem`                   | Label column width in row layout (also settable via the `labelWidth` prop) |
+| `--ou-form-control-bg`             | `#ffffff`                 | Input background                                                           |
+| `--ou-form-control-border`         | `rgb(0 0 0 / 0.2)`        | Default border                                                             |
+| `--ou-form-control-border-hover`   | `rgb(0 0 0 / 0.35)`       | Hover border                                                               |
+| `--ou-form-control-border-focus`   | `var(--ou-ring, #2563eb)` | Focus ring colour                                                          |
+| `--ou-form-control-border-invalid` | `#dc2626`                 | Error state                                                                |
+| `--ou-form-control-radius`         | `0.375rem`                | Corner radius                                                              |
+| `--ou-form-control-padding-y`      | `0.5rem`                  | Vertical padding inside the control                                        |
+| `--ou-form-control-padding-x`      | `0.75rem`                 | Horizontal padding inside the control                                      |
+| `--ou-form-affix-fg`               | `rgb(0 0 0 / 0.55)`       | Prepend / append colour                                                    |
+| `--ou-form-description-fg`         | `rgb(0 0 0 / 0.55)`       | Helper text colour                                                         |
+| `--ou-form-message-fg`             | `#dc2626`                 | Error message colour                                                       |
+| `--ou-form-placeholder-fg`         | `rgb(0 0 0 / 0.4)`        | Placeholder colour                                                         |
+| `--ou-form-required-fg`            | `#dc2626`                 | Required-indicator asterisk colour                                         |
+
+---
+
+## Accessibility
+
+- Label and input are linked via `htmlFor` + `id` (ids are auto-generated).
+- `aria-invalid` is set on the input when an error is displayed.
+- `aria-describedby` points to the description and (when shown) the
+  error message.
+- `aria-required` mirrors the `required` prop.
+- The error message has `role="alert"`, so screen readers announce it
+  the first time it appears after a submit attempt.
+- Prepend / append affixes are `aria-hidden="true"` — if the prefix
+  carries meaning (e.g. a currency code), include it in the label or
+  description instead.
+
+---
+
+## See also
+
+- `form.TextareaField` — multi-line variant
+- `form.SelectField` — single-select dropdown
+- `form.ComboboxField` — filterable single-select with optional icons
+- `form.MultiComboboxField` — multi-select with chips
