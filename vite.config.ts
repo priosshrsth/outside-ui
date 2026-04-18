@@ -22,6 +22,8 @@ export default defineConfig({
       "src/combobox/index.ts",
       "src/dialog/index.ts",
       "src/checkbox-group/index.ts",
+      "src/form/index.ts",
+      "src/input/index.ts",
       "src/radio-group/index.ts",
       "src/select/index.ts",
       "src/tabs/index.ts",

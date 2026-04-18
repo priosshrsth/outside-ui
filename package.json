@@ -48,6 +48,10 @@
       "types": "./dist/form/index.d.mts",
       "default": "./dist/form/index.mjs"
     },
+    "./input": {
+      "types": "./dist/input/index.d.mts",
+      "default": "./dist/input/index.mjs"
+    },
     "./lazy-search": {
       "types": "./dist/lazy-search/index.d.mts",
       "default": "./dist/lazy-search/index.mjs"
@@ -166,5 +170,10 @@
       "vite": "npm:@voidzero-dev/vite-plus-core@latest",
       "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
     }
+  },
+  "inlinedDependencies": {
+    "@tanstack/devtools-event-client": "0.4.3",
+    "@tanstack/form-core": "1.29.0",
+    "@tanstack/store": "0.9.3"
   }
 }

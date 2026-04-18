@@ -4,6 +4,7 @@ export * from "./checkbox-group";
 export * from "./combobox";
 export * from "./dialog";
 export * from "./form";
+export * from "./input";
 export * from "./lazy-search";
 export * from "./radio-group";
 export * from "./select";
